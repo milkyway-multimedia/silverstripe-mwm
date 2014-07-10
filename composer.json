@@ -1,0 +1,19 @@
+{
+    "name"       : "milkyway-multimedia/silverstripe-mwm",
+    "description": "Some basic utilities used across multiple milkyway multimedia modules",
+    "type"       : "silverstripe-module",
+    "keywords"   : ["silverstripe utilities mwm"],
+    "license"    : "MIT",
+    "authors"    : [
+        {
+            "name" : "Mellisa Hankins",
+            "email": "mell@milkywaymultimedia.com.au"
+        }
+    ],
+    "require"    : {
+        "silverstripe/framework"                  : "~3.1"
+    },
+    "extra"      : {
+        "installer-name": "mwm"
+    }
+}

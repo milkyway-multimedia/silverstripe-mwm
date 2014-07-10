@@ -1,0 +1,6 @@
+---
+Name: mwm-utility-extensions
+---
+Controller:
+  extensions:
+    - Milkyway\Extensions\Controller
