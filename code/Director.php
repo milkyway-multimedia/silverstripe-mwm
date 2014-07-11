@@ -47,7 +47,7 @@ class Director extends \Director implements \TemplateGlobalProvider {
 			$page->write();
 			$page->publish('Stage', 'Live');
 
-			$response = self::open(self::makeRelative($page->Link()));
+			$response = self::test(self::makeRelative($page->Link()));
 			$written = null;
 
 			if ($fh = fopen($pagePath, 'w')) {
