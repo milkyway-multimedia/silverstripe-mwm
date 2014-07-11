@@ -25,7 +25,7 @@ class Assets {
     ];
 
     public static function config() {
-        return Config::inst()->forClass('Milkyway_Assets');
+        return \Config::inst()->forClass('Milkyway_Assets');
     }
 
     protected static $replace = [];
@@ -48,10 +48,9 @@ class Assets {
             return;
 
         foreach ($files as $file) {
-            $type = pathinfo($file, PATHINFO_EXTENSION);
-            $css = substr($type, 0, 3) == 'css';
+            $type = strtok(strtok(pathinfo($file, PATHINFO_EXTENSION), '#'), '?');
 
-            if ($css || substr($type, 0, 2) == 'js') {
+            if ($type == 'css' || $type == 'js') {
                 if($before && isset(self::$files[$where][$before])) {
                     $i = 0;
                     foreach(self::$files[$where][$type] as $key => $ret) {
@@ -64,7 +63,7 @@ class Assets {
                     }
                 }
                 else {
-                    if($css)
+                    if($type == 'css')
                         self::$files[$where][$type][$file] = array('media' => '');
                     else
                         self::$files[$where][$type][$file] = true;
@@ -129,14 +128,14 @@ class Assets {
     public static function head($file) {
         if($file && Director::fileExists($file) && ($ext = pathinfo($file, PATHINFO_EXTENSION)) && ($ext == 'js' || $ext == 'css')) {
             if($ext == 'js')
-                Requirements::insertHeadTags('<script src="' . self::get_cache_busted_file_url($file) . '"></script>', $file);
+                \Requirements::insertHeadTags('<script src="' . self::get_cache_busted_file_url($file) . '"></script>', $file);
             else
-                Requirements::insertHeadTags('<link href="' . self::get_cache_busted_file_url($file) . '" rel="stylesheet" />', $file);
+                \Requirements::insertHeadTags('<link href="' . self::get_cache_busted_file_url($file) . '" rel="stylesheet" />', $file);
         }
     }
 
     public static function block() {
-        $blocked = (array) self::config()->blocked;
+        $blocked = (array) self::config()->block;
 
         if(count($blocked)) {
             foreach($blocked as $block) {
@@ -145,11 +144,11 @@ class Assets {
                 if(isset($matches[1]) && count($matches[1])) {
                     foreach($matches[1] as $match) {
                         if(defined($match))
-                            str_replace('{{' . $match . '}}', constant($match), $block);
+                            $block = str_replace('{{' . $match . '}}', constant($match), $block);
                     }
                 }
 
-                Requirements::block($block);
+                \Requirements::block($block);
             }
         }
     }
@@ -174,7 +173,7 @@ class Assets {
     }
 
     public static function js_attach_to_event() {
-        Requirements::insertHeadTags('
+        \Requirements::insertHeadTags('
 	<script>
 		function attachToEvent(element, event, callback) {
 			if(element.addEventListener)
@@ -258,9 +257,6 @@ class Assets {
 
 class Assets_Backend extends \Requirements_Backend {
 	protected function path_for_file($fileOrUrl) {
-        if(!Assets::config()->use_cache_busting)
-            return parent::path_for_file($fileOrUrl);
-
 		if(preg_match('{^//|http[s]?}', $fileOrUrl))
 			return $fileOrUrl;
 		elseif(\Director::fileExists($fileOrUrl))
@@ -269,16 +265,17 @@ class Assets_Backend extends \Requirements_Backend {
 			return false;
 	}
 
-//	public function customScript($script, $uniquenessID = null) {
-//		if(strpos($script, 'MemberLoginForm')) return '';
-//
-//		if($uniquenessID) $this->customScript[$uniquenessID] = $script;
-//		else $this->customScript[] = $script;
-//
-//		$script .= "\n";
-//
-//		return $script;
-//	}
+	public function customScript($script, $uniquenessID = null) {
+		if(strpos($script, 'MemberLoginForm')) return '';
+
+		if($uniquenessID) $this->customScript[$uniquenessID] = $script;
+		else $this->customScript[] = $script;
+
+		$script .= "\n";
+
+		return $script;
+	}
+
 	private $_response;
 
 	public function includeInHTML($templateFile, $content) {
@@ -288,7 +285,7 @@ class Assets_Backend extends \Requirements_Backend {
 		return $body;
 	}
 
-	public function include_in_response(SS_HTTPResponse $response) {
+	public function include_in_response(\SS_HTTPResponse $response) {
 		$this->assets();
 		parent::include_in_response($response);
 		if(\Director::is_ajax())
@@ -371,7 +368,7 @@ class Assets_Backend extends \Requirements_Backend {
         $time = time();
 
 		if(count($deferred)) {
-            foreach($deferred as $file) {
+            foreach($deferred as $file => $data) {
                 $this->removeIfFound($file, 'css');
 
                 $this->removeIfFound('Deferred-CSS', 'customScript');
@@ -398,7 +395,7 @@ class Assets_Backend extends \Requirements_Backend {
         $deferred = Assets::get_files_by_type('js', 'defer');
 
         if(count($deferred)) {
-            foreach($deferred as $file) {
+            foreach($deferred as $file => $data) {
                 $this->removeIfFound($file, 'javascript');
                 $this->removeIfFound('Deferred-JS', 'customScript');
 
@@ -431,7 +428,7 @@ class Assets_Backend extends \Requirements_Backend {
 
             $items = [];
 
-            foreach ($inlines as $file)
+            foreach ($inlines as $file => $data)
             {
                 $content = @file_get_contents($file);
 
@@ -467,7 +464,7 @@ class Assets_Backend extends \Requirements_Backend {
     }
 
     protected function removeIfFound($file, $var = 'css') {
-        if(isset($this->$var[$file]))
-            unset($this->$var[$file]);
+        if(isset($this->{$var}[$file]))
+            unset($this->{$var}[$file]);
     }
 }

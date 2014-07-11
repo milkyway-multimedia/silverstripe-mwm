@@ -1,6 +1,6 @@
 <?php namespace Milkyway;
 
-class Director extends \Director implements TemplateGlobalProvider {
+class Director extends \Director implements \TemplateGlobalProvider {
 	public static function create_page($url, $type = 'Page', $values = array()) {
 		if(\SiteTree::get_by_link($url)) return;
 
@@ -206,7 +206,7 @@ class Director extends \Director implements TemplateGlobalProvider {
 		if(\ClassInfo::exists('SiteTree')) {
 			$page = \Page::create();
 
-			$page->URLSegment = $url ? $url : self::get_link_for_controller(get_class($controller));
+			$page->URLSegment = $url ? $url : $controller->Link();
 			$page->Action = $action;
 			$page->ID = -1;
 
