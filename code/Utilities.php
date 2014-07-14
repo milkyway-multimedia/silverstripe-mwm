@@ -202,4 +202,31 @@ class Utilities implements \TemplateGlobalProvider {
     public static function localeLanguage() {
         return i18n::get_lang_from_locale(self::contentLocale(1));
     }
+
+    /**
+     * Convert a value to be suitable for an HTML ID attribute. Replaces non
+     * supported characters with an underscore.
+     *
+     * @temporary
+     *
+     * @see http://www.w3.org/TR/REC-html40/types.html#type-cdata
+     *
+     * @param array|string $val String to escape, or array of strings
+     *
+     * @return array|string
+     */
+    public static function raw2htmlid($val) {
+        if(is_array($val)) {
+            foreach($val as $k => $v) {
+                $val[$k] = self::raw2htmlid($v);
+            }
+
+            return $val;
+        } else {
+            return trim(preg_replace(
+                    '/_+/', '_', preg_replace('/[^a-zA-Z0-9\-_:.]+/','_', $val)),
+                '_'
+            );
+        }
+    }
 } 
