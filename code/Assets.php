@@ -354,7 +354,7 @@ class Assets_Backend extends \Requirements_Backend {
         $inline = array_merge(Assets::get_files_by_type('css', 'inline'), Assets::get_files_by_type('css', 'inline-head'));
         $this->inlineFiles($inline, 'customCSS', 'css', '%s', 'Inline-CSS');
 
-        $this->inlineFiles(Assets::get_files_by_type('js', 'inline-head'), 'customHeadTags', 'javascript', '<script type="text/javascript">%s</style>', 'Inline-JS-Head');
+        $this->inlineFiles(Assets::get_files_by_type('js', 'inline-head'), 'customHeadTags', 'javascript', '<script type="text/javascript">%s</script>', 'Inline-JS-Head');
         $this->inlineFiles(Assets::get_files_by_type('js', 'inline'), 'customScript', 'javascript', '%s', 'Inline-JS');
 
         $deferred = Assets::get_files_by_type('css', 'defer');
@@ -423,6 +423,8 @@ class Assets_Backend extends \Requirements_Backend {
 
             foreach ($inlines as $file => $data)
             {
+                if(!\Director::is_absolute_url($file))
+                    $file = \Director::getAbsFile($file);
                 $content = @file_get_contents($file);
 
                 if ($content)
