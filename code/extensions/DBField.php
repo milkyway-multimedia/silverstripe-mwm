@@ -27,7 +27,7 @@ class DBField extends \Extension {
      */
     public function Parse($parser = 'TextParser') {
         if($parser == 'TextParser' || is_subclass_of($parser, 'TextParser')) {
-            $obj = Object::create($parser, $this->owner->value);
+            $obj = \Object::create($parser, $this->owner->value);
             return $obj->parse();
         } else {
             return $this->owner->Nice();
