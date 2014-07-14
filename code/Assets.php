@@ -1,6 +1,22 @@
 <?php namespace Milkyway;
 
 class Assets {
+    /** @var bool Append the cache busting id as a file extension rather than as a query string */
+    public static $use_cache_busted_file_extensions = false;
+
+    /** @var array Disable cache busted file extensions for specific controllers */
+    public static $disable_cache_busted_file_extensions_for = [
+        'LeftAndMain',
+    ];
+
+    /** @var array Disable blocked files for specific controllers */
+    public static $disable_blocked_files_for = [
+        'LeftAndMain',
+    ];
+
+    /** @var array Disable replacment files for specific controllers */
+    public static $disable_replaced_files_for = [];
+
     protected static $files = [
         'first' => [
             'css' => [],
@@ -101,7 +117,7 @@ class Assets {
 		self::remove($file, 'defer');
 	}
 
-	public static function inline($file, $before = '', $top = false) {
+	public static function inline($file, $top = false, $before = '') {
         if($top)
             self::add($file, 'inline-head', $before);
         else
@@ -257,10 +273,13 @@ class Assets {
 
 class Assets_Backend extends \Requirements_Backend {
 	protected function path_for_file($fileOrUrl) {
+        if(!Assets::$use_cache_busted_file_extensions)
+            return parent::path_for_file($fileOrUrl);
+
 		if(preg_match('{^//|http[s]?}', $fileOrUrl))
 			return $fileOrUrl;
 		elseif(\Director::fileExists($fileOrUrl))
-			return \Director::baseURL() . Assets::get_cache_busted_file_url($fileOrUrl);
+			return \Controller::join_links(\Director::baseURL(), Assets::get_cache_busted_file_url($fileOrUrl));
 		else
 			return false;
 	}
@@ -330,33 +349,7 @@ class Assets_Backend extends \Requirements_Backend {
 		$this->css = array_merge(($firstCss + $this->css), $lastCss);
 		$this->javascript = array_merge(($firstJs + $this->javascript), $lastJs);
 
-		$replaced = Assets::replacements();
-
-		if(count($replaced)) {
-			foreach($replaced as $old => $new) {
-				if(isset($this->css[$old])) {
-					$old = $this->css[$old];
-					unset($this->css[$old]);
-					$this->css[$new] = $old;
-				}
-                elseif(isset($this->javascript[$old])) {
-                    unset($this->javascript[$old]);
-                    $this->javascript[$new] = true;
-                }
-                elseif(isset($this->customScript[$old])) {
-                    unset($this->customScript[$old]);
-                    $this->customScript[$new] = true;
-                }
-                elseif(isset($this->customCSS[$old])) {
-                    unset($this->customCSS[$old]);
-                    $this->customCSS[$new] = true;
-                }
-                elseif(isset($this->customHeadTags[$old])) {
-                    unset($this->customHeadTags[$old]);
-                    $this->customHeadTags[$new] = true;
-                }
-			}
-		}
+        $this->issueReplacements();
 
         $inline = array_merge(Assets::get_files_by_type('css', 'inline'), Assets::get_files_by_type('css', 'inline-head'));
         $this->inlineFiles($inline, 'customCSS', 'css', '%s', 'Inline-CSS');
@@ -466,5 +459,44 @@ class Assets_Backend extends \Requirements_Backend {
     protected function removeIfFound($file, $var = 'css') {
         if(isset($this->{$var}[$file]))
             unset($this->{$var}[$file]);
+    }
+
+    protected function issueReplacements()
+    {
+        foreach(Assets::$disable_replaced_files_for as $class) {
+            if (is_a($this->owner, $class))
+               return;
+        }
+
+        $replaced = Assets::replacements();
+
+        if (count($replaced))
+        {
+            foreach ($replaced as $old => $new)
+            {
+                if (isset($this->css[$old]))
+                {
+                    $old = $this->css[$old];
+                    unset($this->css[$old]);
+                    $this->css[$new] = $old;
+                } elseif (isset($this->javascript[$old]))
+                {
+                    unset($this->javascript[$old]);
+                    $this->javascript[$new] = true;
+                } elseif (isset($this->customScript[$old]))
+                {
+                    unset($this->customScript[$old]);
+                    $this->customScript[$new] = true;
+                } elseif (isset($this->customCSS[$old]))
+                {
+                    unset($this->customCSS[$old]);
+                    $this->customCSS[$new] = true;
+                } elseif (isset($this->customHeadTags[$old]))
+                {
+                    unset($this->customHeadTags[$old]);
+                    $this->customHeadTags[$new] = true;
+                }
+            }
+        }
     }
 }

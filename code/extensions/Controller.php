@@ -7,17 +7,23 @@ use Milkyway\Assets_Backend;
  * Milkyway Multimedia
  * Controller.php
  *
- * @package reggardocolaianni.com
+ * @package milkyway-multimedia/silverstripe-mwm
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 class Controller extends \Extension {
     function onBeforeInit() {
-        if($this->owner instanceof \LeftAndMain)
-            \Requirements::set_backend(new \Requirements_Backend());
+        foreach(Assets::$disable_cache_busted_file_extensions_for as $class) {
+            if (is_a($this->owner, $class))
+                Assets::$disable_cache_busted_file_extensions_for;
+        }
     }
 
     public function onAfterInit() {
-        if(\Requirements::backend() instanceof Assets_Backend)
-            Assets::block();
+        foreach(Assets::$disable_blocked_files_for as $class) {
+            if (is_a($this->owner, $class))
+                return;
+        }
+
+        Assets::block();
     }
 } 

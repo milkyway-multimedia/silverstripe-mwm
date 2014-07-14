@@ -179,15 +179,9 @@ class Director extends \Director implements \TemplateGlobalProvider {
 		return self::protocol();
 	}
 
-	// Check if site is being viewed on a mobile browser
-	public static function isMobile() {
-		return self::detector()->isMobile();
-	}
-
-	// Check if site is being viewed on a tablet
-	public static function isTablet() {
-		return self::detector()->isTablet();
-	}
+    public static function adminLink() {
+        return \Controller::join_links(\Config::inst()->get('AdminRootController', 'url_base'));
+    }
 
 	public static function get_template_global_variables() {
 		return array(
@@ -197,8 +191,9 @@ class Director extends \Director implements \TemplateGlobalProvider {
 			'protocol',
 			'homePage',
 			'isHomePage',
-			'isMobile',
-			'isTablet',
+            'adminLink',
+            'SiteConfig' => 'current_site_config',
+            'siteConfig' => 'current_site_config',
 		);
 	}
 
@@ -244,4 +239,24 @@ class Director extends \Director implements \TemplateGlobalProvider {
 
 		return $url;
 	}
+
+    // Convert the get vars into a query string, automatically eliminates the url get var
+    public static function query_string($request = null) {
+        if(!$request)
+            $request = \Controller::curr()->Request;
+
+        if(!$request) return '';
+
+        $vars = $request->getVars();
+        if(isset($vars['url'])) unset($vars['url']);
+
+        return count($vars) ? '?' . http_build_query($vars) : '';
+    }
+
+    public static function current_site_config() {
+        if(\Controller::curr() && (\Controller::curr() instanceof ContentController) && \Controller::curr()->data() && $config = \Controller::curr()->data()->SiteConfig)
+            return $config;
+
+        return \SiteConfig::current_site_config();
+    }
 }
