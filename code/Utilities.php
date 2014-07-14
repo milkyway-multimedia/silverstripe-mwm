@@ -171,13 +171,13 @@ class Utilities implements \TemplateGlobalProvider {
             else
                 $theme = project();
 
-            $file = BASE_PATH . '/' . $theme . '/' . $file;
+            $file = $theme . '/' . $file;
         }
-        else
-            $file = BASE_PATH . '/' . $file;
 
-        if(file_exists($file))
-            return \DBField::create_field('HTMLText', file_get_contents($file));
+        $file = \Director::is_absolute_url($file) ? $file : \Director::getAbsFile($file);
+
+        if(\Director::is_absolute_url($file) || @file_exists($file))
+            return \DBField::create_field('HTMLText', @file_get_contents($file));
 
         return '';
     }
