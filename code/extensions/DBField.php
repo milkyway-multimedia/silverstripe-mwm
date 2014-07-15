@@ -125,4 +125,12 @@ class DBField extends \Extension {
     public function FormatOrNot($format = 'Nice') {
         return $this->owner->value && $this->owner->value != '0000-00-00 00:00:00' ? $this->owner->$format() : '<span class="ui-button-icon-primary ui-icon btn-icon-decline"></span>';
     }
+
+    /**
+     * Format a clean decimal (no additional zeros)
+     * @return string
+     */
+    public function CleanDecimal() {
+        return (float)$this->owner->value;
+    }
 } 
