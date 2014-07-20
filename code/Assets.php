@@ -159,8 +159,16 @@ class Assets {
 
                 if(isset($matches[1]) && count($matches[1])) {
                     foreach($matches[1] as $match) {
-                        if(defined($match))
-                            $block = str_replace('{{' . $match . '}}', constant($match), $block);
+                        if(strpos('|', $match) !== false)
+                            list($const, $default) = explode('|', $match);
+                        else {
+                            $const = $default = $match;
+                        }
+
+                        if(defined(trim($const)))
+                            $block = str_replace('{{' . $match . '}}', constant(trim($const)), $block);
+                        elseif(trim($default))
+                            $block = str_replace('{{' . $match . '}}', trim($default), $block);
                     }
                 }
 
