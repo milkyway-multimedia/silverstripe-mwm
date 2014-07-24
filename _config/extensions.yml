@@ -3,13 +3,13 @@ Name: mwm-utility-extensions
 ---
 Controller:
   extensions:
-    - Milkyway\Extensions\Controller
+    - Milkyway\SS\Extensions\Controller
 DataObject:
   extensions:
-    - Milkyway\Extensions\DataObject
+    - Milkyway\SS\Extensions\DataObject
 DBField:
   extensions:
-    - Milkyway\Extensions\DBField
+    - Milkyway\SS\Extensions\DBField
 Member:
   extensions:
-    - Milkyway\Extensions\Member
+    - Milkyway\SS\Extensions\Member

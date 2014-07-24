@@ -1,4 +1,4 @@
-<?php namespace Milkyway\Extensions;
+<?php namespace Milkyway\SS\Extensions;
 /**
  * Milkyway Multimedia
  * Member.php

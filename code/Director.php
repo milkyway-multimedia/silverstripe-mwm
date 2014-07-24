@@ -1,4 +1,4 @@
-<?php namespace Milkyway;
+<?php namespace Milkyway\SS;
 
 class Director extends \Director implements \TemplateGlobalProvider {
 	public static function create_page($url, $type = 'Page', $values = array()) {

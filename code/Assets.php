@@ -1,4 +1,4 @@
-<?php namespace Milkyway;
+<?php namespace Milkyway\SS;
 
 class Assets {
     /** @var bool Append the cache busting id as a file extension rather than as a query string */

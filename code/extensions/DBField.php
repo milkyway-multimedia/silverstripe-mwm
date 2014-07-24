@@ -1,6 +1,6 @@
-<?php namespace Milkyway\Extensions;
+<?php namespace Milkyway\SS\Extensions;
 
-use Milkyway\Utilities;
+use Milkyway\SS\Utilities;
 
 /**
  * Milkyway Multimedia

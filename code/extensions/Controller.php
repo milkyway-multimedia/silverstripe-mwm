@@ -1,7 +1,7 @@
-<?php namespace Milkyway\Extensions;
+<?php namespace Milkyway\SS\Extensions;
 
-use Milkyway\Assets;
-use Milkyway\Assets_Backend;
+use Milkyway\SS\Assets;
+use Milkyway\SS\Assets_Backend;
 
 /**
  * Milkyway Multimedia

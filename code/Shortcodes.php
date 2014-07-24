@@ -1,4 +1,4 @@
-<?php namespace Milkyway;
+<?php namespace Milkyway\SS;
 /**
  * Milkyway Multimedia
  * Shortcodes.php
