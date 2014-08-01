@@ -159,7 +159,7 @@ class Assets {
 
                 if(isset($matches[1]) && count($matches[1])) {
                     foreach($matches[1] as $match) {
-                        if(strpos('|', $match) !== false)
+                        if(strpos($match, '|') !== false)
                             list($const, $default) = explode('|', $match);
                         else {
                             $const = $default = $match;
