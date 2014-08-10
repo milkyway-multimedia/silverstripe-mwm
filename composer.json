@@ -1,5 +1,5 @@
 {
-    "name"       : "milkyway-multimedia/silverstripe-mwm",
+    "name"       : "milkyway-multimedia/ss-mwm",
     "description": "Some basic utilities used across multiple milkyway multimedia modules",
     "type"       : "silverstripe-module",
     "keywords"   : ["silverstripe utilities mwm"],
