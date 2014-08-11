@@ -159,6 +159,7 @@ class Utilities implements \TemplateGlobalProvider {
             'canAccessCMS',
             'canEditCurrentPage',
             'inlineFile',
+            'placeIMG',
         );
     }
 
@@ -200,6 +201,10 @@ class Utilities implements \TemplateGlobalProvider {
     }
 
     public static function localeLanguage() {
+        return i18n::get_lang_from_locale(self::contentLocale(1));
+    }
+
+    public static function placeIMG() {
         return i18n::get_lang_from_locale(self::contentLocale(1));
     }
 
