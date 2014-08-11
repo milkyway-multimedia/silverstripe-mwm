@@ -192,20 +192,20 @@ class Utilities implements \TemplateGlobalProvider {
     }
 
     public static function contentLocale($noTransform = 0) {
-        $locale = Controller::curr() && Controller::curr()->Locale ? Controller::curr()->Locale : i18n::get_locale();
+        $locale = \Controller::curr() && \Controller::curr()->Locale ? \Controller::curr()->Locale : \i18n::get_locale();
 
         if ($noTransform)
             return $locale;
 
-        return i18n::convert_rfc1766($locale);
+        return \i18n::convert_rfc1766($locale);
     }
 
     public static function localeLanguage() {
-        return i18n::get_lang_from_locale(self::contentLocale(1));
+        return \i18n::get_lang_from_locale(self::contentLocale(1));
     }
 
-    public static function placeIMG() {
-        return i18n::get_lang_from_locale(self::contentLocale(1));
+    public static function placeIMG($width = 400, $height = 300, $categories = 'any', $filters = '') {
+        return \Controller::join_links(\Director::protocol() . );
     }
 
     /**
