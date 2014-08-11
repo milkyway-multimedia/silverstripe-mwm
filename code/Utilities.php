@@ -234,4 +234,20 @@ class Utilities implements \TemplateGlobalProvider {
             );
         }
     }
+
+    public static function map_array_to_i18n(array $array, $i18nPrefix = '', $replacements = []) {
+        if($i18nPrefix)
+            $i18nPrefix = trim($i18nPrefix, '.') . '.';
+
+        $map = [];
+
+        foreach($array as $key => $value) {
+            if(is_array($value))
+                $map[$key] = static::map_array_to_i18n($value, $i18nPrefix, $replacements);
+            else
+                $map[$key] = _t($i18nPrefix . $key, \FormField::name_to_label($value), $replacements);
+        }
+
+        return $map;
+    }
 } 

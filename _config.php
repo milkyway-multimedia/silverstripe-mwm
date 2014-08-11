@@ -2,7 +2,7 @@
 
 Requirements::set_backend(new \Milkyway\SS\Assets_Backend());
 
-if (ClassInfo::exists('SiteTree')) {
+if (ClassInfo::exists('SiteConfig')) {
     ShortcodeParser::get('default')->register('site_config', array('Milkyway\SS\Shortcodes', 'site_config_parser'));
 }
 

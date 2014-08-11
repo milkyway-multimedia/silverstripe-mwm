@@ -21,8 +21,8 @@ class Shortcodes {
         $value = $siteConfig->obj($field);
 
         if($value instanceof DBField) {
-            if(isset($arguments['cast']) && $value->hasMethod($arguments['cast']))
-                $cast = $arguments['cast'];
+            if(isset($arguments['type']) && $value->hasMethod($arguments['type']))
+                $cast = $arguments['type'];
             else
                 $cast = 'Nice';
 
@@ -34,13 +34,16 @@ class Shortcodes {
             $value = $parser->parse($value);
         }
 
+        if(isset($arguments['caption']))
+            $caption = $arguments['caption'];
+
         if(!$caption)
             $caption = $value;
 
-        if(\Email::validEmailAddress($value))
+        if(\Email::validEmailAddress($value) && !isset($arguments['nolink']))
             return '<a href="mailto:' . $value . '">' . $caption . '</a>';
 
-        if(filter_var($value, FILTER_VALIDATE_URL))
+        if(filter_var($value, FILTER_VALIDATE_URL) && !isset($arguments['nolink']))
             return '<a href="' . $value . '">' . $caption . '</a>';
 
         return $value;
@@ -56,16 +59,33 @@ class Shortcodes {
         if(!$member) return '';
         if(!$member->hasField($field)) return '';
 
-        $value = $member->$field;
+        $value = $member->obj($field);
 
-        if($parser)
+        if($value instanceof DBField) {
+            if(isset($arguments['type']) && $value->hasMethod($arguments['type']))
+                $cast = $arguments['type'];
+            else
+                $cast = 'Nice';
+
+            $value = $value->$cast();
+        }
+
+        if($parser) {
+            $caption = $parser->parse($caption);
             $value = $parser->parse($value);
+        }
+
+        if(isset($arguments['caption']))
+            $caption = $arguments['caption'];
+
+        if(!$caption)
+            $caption = $value;
 
         if(\Email::is_valid_address($value) && !isset($arguments['nolink']))
-            return '<a href="mailto:' . $value . '">' . $value . '</a>';
+            return '<a href="mailto:' . $value . '">' . $caption . '</a>';
 
         if(filter_var($value, FILTER_VALIDATE_URL) && !isset($arguments['nolink']))
-            return '<a href="' . $value . '">' . $value . '</a>';
+            return '<a href="' . $value . '">' . $caption . '</a>';
 
         return $value;
     }
@@ -105,6 +125,9 @@ class Shortcodes {
 
     // A short code parser for css icons
     public static function css_icon_parser($arguments, $content = null, $parser = null) {
+        if(isset($arguments['use']))
+            $content = $arguments['use'];
+
         if(!$content) return '';
 
         if(isset($arguments['prepend']) && $arguments['prepend'])
