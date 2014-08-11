@@ -205,7 +205,7 @@ class Utilities implements \TemplateGlobalProvider {
     }
 
     public static function placeIMG($width = 400, $height = 300, $categories = 'any', $filters = '') {
-        return \Controller::join_links(\Director::protocol() . );
+        return \Controller::join_links(\Director::protocol() . 'placeimg.com', $width, $height, $categories, $filters);
     }
 
     /**
