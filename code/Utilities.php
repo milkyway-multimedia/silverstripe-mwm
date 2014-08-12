@@ -160,6 +160,7 @@ class Utilities implements \TemplateGlobalProvider {
             'canEditCurrentPage',
             'inlineFile',
             'placeIMG',
+            'is' => 'is_instanceof',
         );
     }
 
@@ -249,5 +250,17 @@ class Utilities implements \TemplateGlobalProvider {
         }
 
         return $map;
+    }
+
+    public static function is_instanceof($class, $page = null) {
+        if(!$page)
+             $page = \Controller::curr();
+
+        if($page->hasMethod('data'))
+            $page = $page->data();
+        
+        $obj = singleton($class);
+
+        return $page instanceof $obj;
     }
 } 
