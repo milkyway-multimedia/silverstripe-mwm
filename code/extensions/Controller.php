@@ -2,6 +2,7 @@
 
 use Milkyway\SS\Assets;
 use Milkyway\SS\Assets_Backend;
+use Milkyway\SS\Utilities;
 
 /**
  * Milkyway Multimedia
@@ -25,5 +26,8 @@ class Controller extends \Extension {
         }
 
         Assets::block();
+
+	    if(Utilities::isFrontendEditingEnabled())
+		    \Requirements::unblock(THIRDPARTY_DIR . '/jquery-entwine/dist/jquery.entwine-dist.js');
     }
 } 

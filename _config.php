@@ -10,3 +10,9 @@ ShortcodeParser::get('default')->register('user', array('Milkyway\SS\Shortcodes'
 ShortcodeParser::get('default')->register('google_fixurl', array('Milkyway\SS\Shortcodes', 'google_fixurl_parser'));
 ShortcodeParser::get('default')->register('current_page', array('Milkyway\SS\Shortcodes', 'current_page_parser'));
 ShortcodeParser::get('default')->register('icon', array('Milkyway\SS\Shortcodes', 'css_icon_parser'));
+
+if ( ! function_exists('with')) {
+	function with($object) {
+		return $object;
+	}
+}

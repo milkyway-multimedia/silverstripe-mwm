@@ -20,13 +20,13 @@ class Shortcodes {
 
         $value = $siteConfig->obj($field);
 
-        if($value instanceof DBField) {
+        if($value instanceof \DBField) {
             if(isset($arguments['type']) && $value->hasMethod($arguments['type']))
                 $cast = $arguments['type'];
             else
                 $cast = 'Nice';
 
-            $value = $value->$cast();
+            $value = Utilities::isFrontendEditingEnabled() ? $value->XML() : $value->$cast();
         }
 
         if($parser) {
@@ -67,7 +67,7 @@ class Shortcodes {
             else
                 $cast = 'Nice';
 
-            $value = $value->$cast();
+            $value = Utilities::isFrontendEditingEnabled() ? $value->XML() : $value->$cast();
         }
 
         if($parser) {
@@ -112,7 +112,7 @@ class Shortcodes {
             else
                 $type = 'Nice';
 
-            $value = $page->hasMethod($field) ? $page->$field() : $page->obj($field)->$type();
+            $value = $page->hasMethod($field) ? $page->$field() : Utilities::isFrontendEditingEnabled() ? $page->obj($field)->XML() : $page->obj($field)->$type();
         }
 
         return $value;
