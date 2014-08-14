@@ -13,17 +13,17 @@ class Member extends \DataExtension {
         if(!$member) $member = $this->owner;
         if(is_object($member)) $member = $member->ID;
 
-        if(isset(self::$_cache_access_cms[$member->ID]))
-            return self::$_cache_access_cms[$member->ID];
+        if(isset(self::$_cache_access_cms[$member]))
+            return self::$_cache_access_cms[$member];
 
         $members = \Member::mapInCMSGroups();
 
         if($members && $members->count())
-            $result = $members->offsetExists($member);
+            $result = $members->byID($member);
         else
             $result = false;
 
-        self::$_cache_access_cms[$member->ID] = $result;
+        self::$_cache_access_cms[$member] = $result;
 
         return $result;
     }
