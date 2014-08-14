@@ -237,7 +237,7 @@ class Utilities implements \TemplateGlobalProvider
 		if(!($text = self::loremIpsumCache()->load($key))) {
 			$text = @file_get_contents(\Controller::join_links('http://loripsum.net/api', $paragraphs, $length, implode('/', $opts)));
 			self::loremIpsumCache()->save($text, $key);
-		}
+		} 
 
 		return $text;
 	}
