@@ -230,6 +230,27 @@ class Utilities implements \TemplateGlobalProvider
 		return \Controller::join_links(\Director::protocol() . 'placeimg.com', $width, $height, $categories, $filters);
 	}
 
+	public static function loremIpsum($paragraphs = 1, $length = 'short', $opts = ['plaintext'])
+	{
+		$key = preg_replace('/[^a-zA-Z0-9_]/', '', $paragraphs . '_' . $length . '_' . implode('_', $opts));
+
+		if(!($text = self::loremIpsumCache()->load($key))) {
+			$text = @file_get_contents(\Controller::join_links('http://loripsum.net/api', $paragraphs, $length, implode('/', $opts)));
+			self::loremIpsumCache()->save($text, $key);
+		}
+
+		return $text;
+	}
+
+	protected static $template_cache;
+
+	protected static function loremIpsumCache() {
+		if(!self::$template_cache)
+			self::$template_cache = \SS_Cache::factory('LoremIpsum', 'Output', ['lifetime' => 100000000]);
+
+		return self::$template_cache;
+	}
+
 	/**
 	 * Convert a value to be suitable for an HTML ID attribute. Replaces non
 	 * supported characters with an underscore.
