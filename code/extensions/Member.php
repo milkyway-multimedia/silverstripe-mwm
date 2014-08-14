@@ -19,7 +19,7 @@ class Member extends \DataExtension {
         $members = \Member::mapInCMSGroups();
 
         if($members && $members->count())
-            $result = $members->byID($member);
+            $result = $members->offsetExists($member);
         else
             $result = false;
 
