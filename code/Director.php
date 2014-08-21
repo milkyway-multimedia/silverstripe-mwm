@@ -173,7 +173,7 @@ class Director extends \Director implements \TemplateGlobalProvider {
 	}
 
 	public static function protocol() {
-		return self::protocol();
+		return parent::protocol();
 	}
 
     public static function adminLink() {
