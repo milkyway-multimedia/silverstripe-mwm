@@ -32,7 +32,7 @@ class ShortcodableController extends \Extension
                 $classname     = $shortcodeData['name'];
             }
         } else {
-            $classname = $this->request->requestVar('ShortcodeType');
+            $classname = $this->owner->Request->requestVar('ShortcodeType');
         }
 
         if ($types = $form->Fields()->fieldByName('ShortcodeType')) {
@@ -142,7 +142,7 @@ class ShortcodableController extends \Extension
                                         ]
                                     )->setForm($form)
                                 )
-                            )->addExtraClass('attributes-composite')
+                            )->addExtraClass('attributes-composite')->setForm($form)
                         );
                         break;
                     case 'current_page':
@@ -173,7 +173,7 @@ class ShortcodableController extends \Extension
                                         ]
                                     )->setForm($form)
                                 )
-                            )->addExtraClass('attributes-composite')
+                            )->addExtraClass('attributes-composite')->setForm($form)
                         );
                         break;
                     case 'icon':
@@ -220,7 +220,7 @@ class ShortcodableController extends \Extension
                                     $iconPrepend,
                                     $iconClasses
                                 )
-                            )->addExtraClass('attributes-composite')
+                            )->addExtraClass('attributes-composite')->setForm($form)
                         );
                         break;
                 }
