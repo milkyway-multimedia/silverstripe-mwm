@@ -3,9 +3,9 @@ Name: mwm-shortcodable
 Only:
   moduleexists: 'shortcodable'
 ---
-Injector:
-  ShortcodableController:
-    class: 'Milkyway\SS\Modules\ShortcodableController'
+ShortcodableController:
+  extensions:
+    - 'Milkyway\SS\Modules\ShortcodableController'
 
 Member:
   valid_shortcode_fields:
