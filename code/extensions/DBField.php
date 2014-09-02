@@ -133,4 +133,13 @@ class DBField extends \Extension {
     public function CleanDecimal() {
         return (float)$this->owner->value;
     }
+
+    public function Trim($trim = null, $direction = '') {
+        if($direction == 'r')
+            return rtrim($this->owner->value, $trim);
+        elseif($direction == 'l')
+            return ltrim($this->owner->value, $trim);
+        else
+            return trim($this->owner->value, $trim);
+    }
 } 
