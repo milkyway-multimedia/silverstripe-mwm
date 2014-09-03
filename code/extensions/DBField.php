@@ -1,5 +1,6 @@
 <?php namespace Milkyway\SS\Extensions;
 
+use Doctrine\Common\Inflector\Inflector;
 use Milkyway\SS\Utilities;
 
 /**
@@ -50,6 +51,14 @@ class DBField extends \Extension {
     public function HTMLID($lowercase = false) {
         $str = trim(str_replace(' ', '-', ucwords(str_replace(['_', '-', '/'], ' ', $this->owner->value))), '-');
         return $lowercase ? strtolower($str) : $str;
+    }
+
+    /**
+     * Convert value to an appropriate class name
+     * @return string
+     */
+    public function CLASSNAME() {
+        return \Convert::raw2htmlname(Inflector::camelize($this->owner->value));
     }
 
     /**
