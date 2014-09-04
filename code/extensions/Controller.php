@@ -30,4 +30,21 @@ class Controller extends \Extension {
 	    if(Utilities::isFrontendEditingEnabled())
 		    \Requirements::unblock(THIRDPARTY_DIR . '/jquery-entwine/dist/jquery.entwine-dist.js');
     }
+
+    public function getBackLink($fallback = '') {
+        if($this->owner->Request) {
+            if($this->owner->Request->requestVar('BackURL')) {
+                $url = $this->owner->Request->requestVar('BackURL');
+            } else if($this->owner->Request->isAjax() && $this->owner->Request->getHeader('X-Backurl')) {
+                $url = $this->owner->Request->getHeader('X-Backurl');
+            } else if($this->owner->Request->getHeader('Referer')) {
+                $url = $this->owner->Request->getHeader('Referer');
+            }
+        }
+
+        if(!$url)
+            $url = $fallback ? $fallback : Director::baseURL();
+
+        return $url;
+    }
 } 
