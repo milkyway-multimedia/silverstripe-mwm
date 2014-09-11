@@ -133,7 +133,7 @@ class Shortcodes {
         if(isset($arguments['prepend']) && $arguments['prepend'])
             $prepend = $arguments['prepend'];
         else
-            $prepend = 'icon icon-';
+            $prepend = 'fa fa-';
 
         if(isset($arguments['classes']) && $arguments['classes'])
             $content .= ' ' . $arguments['classes'];

@@ -197,7 +197,7 @@ class ShortcodableController extends \Extension
                             $iconPrepend = \TextField::create(
                                 'prepend',
                                 _t('Shortcodable.ICON_PREPEND', 'Prepend')
-                            )->setAttribute('placeholder', 'icon icon-');
+                            )->setAttribute('placeholder', 'fa fa-');
                         }
 
                         if (\HTMLEditorField::config()->valid_icon_classes) {
