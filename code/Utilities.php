@@ -179,7 +179,7 @@ class Utilities implements \TemplateGlobalProvider
 		];
 	}
 
-	public static function inlineFile($file, $theme = false)
+	public static function inlineFile($files, $theme = false)
 	{
 		if ($theme) {
 			$theme = ($theme === true || $theme == 1) ? \Config::inst()->get('SSViewer', 'theme') : $theme;
@@ -188,14 +188,17 @@ class Utilities implements \TemplateGlobalProvider
 				$theme = THEMES_DIR . '/' . $theme;
 			else
 				$theme = project();
-
-			$file = $theme . '/' . $file;
 		}
 
-		$file = \Director::is_absolute_url($file) ? $file : \Director::getAbsFile($file);
+		$files = explode(',', $files);
 
-		if (\Director::is_absolute_url($file) || @file_exists($file))
-			return \DBField::create_field('HTMLText', @file_get_contents($file));
+		foreach($files as $file) {
+			$file = $theme . '/' . $file;
+			$file = \Director::is_absolute_url($file) ? $file : \Director::getAbsFile($file);
+
+			if (\Director::is_absolute_url($file) || @file_exists($file))
+				return \DBField::create_field('HTMLText', @file_get_contents($file));
+		}
 
 		return '';
 	}
