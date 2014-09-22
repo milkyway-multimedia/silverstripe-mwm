@@ -2,6 +2,7 @@
 
 use Milkyway\SS\Assets;
 use Milkyway\SS\Assets_Backend;
+use Milkyway\SS\Director;
 use Milkyway\SS\Utilities;
 
 /**
@@ -32,6 +33,8 @@ class Controller extends \Extension {
     }
 
     public function getBackLink($fallback = '') {
+	    $url = '';
+
         if($this->owner->Request) {
             if($this->owner->Request->requestVar('BackURL')) {
                 $url = $this->owner->Request->requestVar('BackURL');
@@ -43,8 +46,40 @@ class Controller extends \Extension {
         }
 
         if(!$url)
-            $url = $fallback ? $fallback : Director::baseURL();
+            $url = $fallback ? $fallback : \Director::baseURL();
 
         return $url;
     }
+
+	public function displayNiceView($controller = null, $url = '', $action = '') {
+		if(!$controller)
+			$controller = $this->owner;
+
+		return Director::create_view($controller, $url, $action);
+	}
+
+	public function respondToFormAppropriately($params, $form = null, $redirect = ''){
+		if($redirect && !isset($params['redirect']))
+			$params['redirect'] = $redirect;
+
+		if($this->owner->Request->isAjax()) {
+			if(!isset($params['code']))
+				$params['code'] = 200;
+			if(!isset($params['code']))
+				$params['status'] = 'success';
+
+			return Director::ajax_response($params, $params['code'], $params['status']);
+		}
+		else {
+			if(isset($params['redirect']))
+				$this->owner->redirect($params['redirect']);
+
+			if($form && isset($params['message'])) {
+				$form->sessionMessage($params['message'], 'good');
+			}
+
+			if(!$this->owner->redirectedTo())
+				$this->owner->redirectBack();
+		}
+	}
 } 
