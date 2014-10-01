@@ -277,6 +277,17 @@ class Assets {
 		}
 	}';
     }
+
+	public static function include_font_css() {
+		if($fonts = static::config()->font_css) {
+			if(!is_array($fonts))
+				$fonts = [$fonts];
+
+			\Requirements::css($fonts);
+		}
+		else
+			\Requirements::css(SS_MWM_DIR . '/thirdparty/font-awesome/css/font-awesome.min.css');
+	}
 }
 
 class Assets_Backend extends \Requirements_Backend {
