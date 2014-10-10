@@ -16,7 +16,7 @@ class Controller extends \Extension {
     function onBeforeInit() {
         foreach(Assets::$disable_cache_busted_file_extensions_for as $class) {
             if (is_a($this->owner, $class))
-                Assets::$disable_cache_busted_file_extensions_for;
+                Assets::$use_cache_busted_file_extensions = false;
         }
     }
 

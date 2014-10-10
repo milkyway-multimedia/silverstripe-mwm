@@ -14,7 +14,7 @@ class Assets {
         'LeftAndMain',
     ];
 
-    /** @var array Disable replacment files for specific controllers */
+    /** @var array Disable replacement files for specific controllers */
     public static $disable_replaced_files_for = [];
 
     protected static $files = [
