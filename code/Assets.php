@@ -291,40 +291,40 @@ class Assets {
 }
 
 class Assets_Backend extends \Requirements_Backend {
-//	protected function path_for_file($fileOrUrl) {
-//        if(!Assets::$use_cache_busted_file_extensions)
-//            return parent::path_for_file($fileOrUrl);
-//
-//		if(preg_match('{^//|http[s]?}', $fileOrUrl))
-//			return $fileOrUrl;
-//		elseif(\Director::fileExists($fileOrUrl))
-//			return \Controller::join_links(\Director::baseURL(), Assets::get_cache_busted_file_url($fileOrUrl));
-//		else
-//			return false;
-//	}
-//
-//	public function customScript($script, $uniquenessID = null) {
-//		if(strpos($script, 'MemberLoginForm')) return '';
-//
-//		if($uniquenessID) $this->customScript[$uniquenessID] = $script;
-//		else $this->customScript[] = $script;
-//
-//		$script .= "\n";
-//
-//		return $script;
-//	}
-//
-//	private $_response;
-//
-//	public function includeInHTML($templateFile, $content) {
-//		$this->assets();
-//		$body = parent::includeInHTML($templateFile, $content);
-//		$this->extras();
-//		return $body;
-//	}
-//
+	protected function path_for_file($fileOrUrl) {
+        if(!Assets::$use_cache_busted_file_extensions)
+            return parent::path_for_file($fileOrUrl);
+
+		if(preg_match('{^//|http[s]?}', $fileOrUrl))
+			return $fileOrUrl;
+		elseif(\Director::fileExists($fileOrUrl))
+			return \Controller::join_links(\Director::baseURL(), Assets::get_cache_busted_file_url($fileOrUrl));
+		else
+			return false;
+	}
+
+	public function customScript($script, $uniquenessID = null) {
+		if(strpos($script, 'MemberLoginForm')) return '';
+
+		if($uniquenessID) $this->customScript[$uniquenessID] = $script;
+		else $this->customScript[] = $script;
+
+		$script .= "\n";
+
+		return $script;
+	}
+
+	private $_response;
+
+	public function includeInHTML($templateFile, $content) {
+		$this->assets();
+		$body = parent::includeInHTML($templateFile, $content);
+		$this->extras();
+		return $body;
+	}
+
 	public function include_in_response(\SS_HTTPResponse $response) {
-		//$this->assets();
+		$this->assets();
 		parent::include_in_response($response);
 		if(\Director::is_ajax())
 			$this->_response = $response;
