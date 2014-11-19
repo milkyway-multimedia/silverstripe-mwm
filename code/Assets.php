@@ -350,9 +350,9 @@ class Assets_Backend extends \Requirements_Backend {
 
 				$end = stripos($body, '</body>');
 
-				if($end !== false)
+				if ($end !== false)
 					$body = preg_replace("/(<\/body[^>]*>)/i", $scripts . "\\1", $body);
-				elseif(strpos($this->_response->getHeader('Content-Type'), 'text/html') !== false)
+				elseif (!$this->_response->getHeader('X-Pjax') && !$this->_response->getHeader('X-DisableDeferred') && strpos($this->_response->getHeader('Content-Type'), 'text/html') !== false)
 					$body .= $scripts;
 
 				$this->_response->setBody($body);
