@@ -12,7 +12,7 @@ This adds a couple of new methods that you can use to better control the Require
 - Milkyway\SS\Assets::defer($file) : Defer a file (loaded after rest of content has finished downloading, using Google Async method)
 - Milkyway\SS\Assets::inline($file, $top = false) : Inline a file (output contents of file directly to specific section)
 - Milkyway\SS\Assets::replace($old, $new) : Replace any requirement with another requirement (you can replace the jQuery version etc.)
-- Milkyway\SS\Assets::head($file) : Insert a file into the header rather than before the </body> tag
+- Milkyway\SS\Assets::head($file) : Insert a file into the header rather than before the ending body tag
 - Milkyway\SS\Assets::add(array $files, 'first/last/defer/inline/inline-head', $before = '') : Add a requirement to the page in a specific section/way.
 - Milkyway\SS\Assets::remove(array $files, 'first/last/defer/inline/inline-head') : Remove a requirement (only works on those added using this interface). If you leave out the second argument, it will search all requirements and remove it
 
