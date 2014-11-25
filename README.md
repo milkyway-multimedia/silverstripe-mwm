@@ -15,6 +15,7 @@ This adds a couple of new methods that you can use to better control the Require
 - Milkyway\SS\Assets::head($file) : Insert a file into the header rather than before the ending body tag
 - Milkyway\SS\Assets::add(array $files, 'first/last/defer/inline/inline-head', $before = '') : Add a requirement to the page in a specific section/way.
 - Milkyway\SS\Assets::remove(array $files, 'first/last/defer/inline/inline-head') : Remove a requirement (only works on those added using this interface). If you leave out the second argument, it will search all requirements and remove it
+- Milkyway\SS\Assets::block_ajax($file|$id) : Block a file/script from loading via AJAX
 
 ### Milkyway\SS\Director
 This extends Director and has a few utility methods related to dealing with the SiteTree and Controllers, and adds some new template globals

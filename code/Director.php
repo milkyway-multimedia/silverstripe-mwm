@@ -163,7 +163,10 @@ class Director extends \Director implements \TemplateGlobalProvider
 		if (!$page && \Controller::curr() && (\Controller::curr() instanceof \ContentController))
 			$page = \Controller::curr()->data();
 
-		return self::homePage() && $page ? $page->ID == self::homePage()->ID : false;
+		if($page && is_object($page))
+			$page = $page->ID;
+
+		return self::homePage() && $page ? $page == self::homePage()->ID : false;
 	}
 
 	public static function secureBaseHref()

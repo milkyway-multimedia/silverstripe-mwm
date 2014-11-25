@@ -45,6 +45,7 @@ class Assets {
     }
 
     protected static $replace = [];
+    protected static $block_ajax = [];
 
 	public static function get_files_by_type($type, $where = 'first') {
 		if(isset(self::$files[$where]) && isset(self::$files[$where][$type]))
@@ -53,9 +54,13 @@ class Assets {
 		return [];
 	}
 
-    public static function replacements() {
-        return self::$replace;
-    }
+	public static function replacements() {
+		return self::$replace;
+	}
+
+	public static function get_block_ajax() {
+		return self::$block_ajax;
+	}
 
 	public static function add($files, $where = 'first', $before = '') {
 		if (is_string($files)) $files = [$files];
@@ -139,6 +144,17 @@ class Assets {
 			unset(self::$replace[$file]);
 		elseif(($key = array_search($file, self::$replace)) && $key !== false)
 			unset(self::$replace[$key]);
+	}
+
+	public static function block_ajax($file) {
+		self::$block_ajax[$file] = true;
+	}
+
+	public static function unblock_ajax($file) {
+		if(isset(self::$block_ajax[$file]))
+			unset(self::$block_ajax[$file]);
+		elseif(($key = array_search($file, self::$block_ajax)) && $key !== false)
+			unset(self::$block_ajax[$key]);
 	}
 
     public static function head($file) {
@@ -291,6 +307,15 @@ class Assets {
 }
 
 class Assets_Backend extends \Requirements_Backend {
+	public function javascriptTemplate($file, $vars, $uniquenessID = null) {
+		if(defined('INFOBOXES_DIR') && $file = INFOBOXES_DIR . '/javascript/InfoBoxes.js') {
+			$uniquenessID = INFOBOXES_DIR . '/javascript/InfoBoxes.js';
+			Assets::block_ajax($uniquenessID);
+		}
+
+		return parent::javascriptTemplate($file, $vars, $uniquenessID);
+	}
+
 	protected function path_for_file($fileOrUrl) {
         if(!Assets::$use_cache_busted_file_extensions)
             return parent::path_for_file($fileOrUrl);
@@ -319,7 +344,7 @@ class Assets_Backend extends \Requirements_Backend {
 	public function includeInHTML($templateFile, $content) {
 		$this->assets();
 		$body = parent::includeInHTML($templateFile, $content);
-		$this->extras();
+		$this->attachCustomScriptsToResponse();
 		return $body;
 	}
 
@@ -328,19 +353,19 @@ class Assets_Backend extends \Requirements_Backend {
 		parent::include_in_response($response);
 		if(\Director::is_ajax())
 			$this->_response = $response;
-		$this->extras();
+		$this->attachCustomScriptsToResponse();
 	}
 
 	/*
 	 * Allow JS and CSS to be deferred even when called via ajax
 	 * @todo Does not work in CMS, which uses jquery ondemand anyway
 	 */
-	protected function extras() {
+	protected function attachCustomScriptsToResponse() {
 		if($this->_response) {
 			if($this->customScript && count($this->customScript)) {
 				$scripts = '';
 
-				foreach(array_diff_key($this->customScript, $this->blocked) as $script) {
+				foreach(array_diff_key($this->customScript, $this->blocked, Assets::get_block_ajax()) as $name => $script) {
 					$scripts .= "<script type=\"text/javascript\">\n";
 					$scripts .= "$script\n";
 					$scripts .= "</script>\n";
@@ -397,7 +422,7 @@ class Assets_Backend extends \Requirements_Backend {
 					';
 				}
 				else {
-					Assets::js_attach_on_event();
+					Assets::js_attach_to_event();
 					$script .= '
 	attachToEvent(window, "load", ' . $function . ');
 					';

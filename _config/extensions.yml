@@ -4,6 +4,9 @@ Name: mwm-utility-extensions
 Controller:
   extensions:
     - Milkyway\SS\Extensions\Controller
+LeftAndMain:
+  extensions:
+    - Milkyway\SS\Extensions\LeftAndMain
 DataObject:
   extensions:
     - Milkyway\SS\Extensions\DataObject
