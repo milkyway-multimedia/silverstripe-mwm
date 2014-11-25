@@ -1,4 +1,24 @@
 (function ($) {
+	$.entwine('ss', function($) {
+		$('.ss-tabset').entwine({
+			onadd: function() {
+				this._super();
+
+				if(window.location.hash && this.data('tabs')) {
+					$(window.location.hash).click();
+				}
+			}
+		});
+
+		$('.ss-tabset-goto').entwine({
+			onclick: function() {
+				if(window.location.hash) {
+					$(window.location.hash).click();
+				}
+			}
+		});
+	});
+
 	$.entwine('ss.tree', function ($) {
 		$('.cms .cms-tree').entwine({
 			getTreeConfig : function () {
