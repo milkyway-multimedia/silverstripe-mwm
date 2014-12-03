@@ -1,18 +1,20 @@
 (function ($) {
-	$.entwine('ss', function($) {
+	$.entwine('ss', function ($) {
+		// Load a tab that matches the hash in current url
 		$('.ss-tabset').entwine({
-			onadd: function() {
+			onadd : function () {
 				this._super();
 
-				if(window.location.hash && this.data('tabs')) {
+				if (window.location.hash && this.data('tabs')) {
 					$(window.location.hash).click();
 				}
 			}
 		});
 
+		// Allow links with ss-tabset-goto to link to a tab
 		$('.ss-tabset-goto').entwine({
-			onclick: function() {
-				if(window.location.hash) {
+			onclick : function () {
+				if (window.location.hash) {
 					$(window.location.hash).click();
 				}
 			}
@@ -20,6 +22,7 @@
 	});
 
 	$.entwine('ss.tree', function ($) {
+		// Add new actions to the context menu for the site tree
 		$('.cms .cms-tree').entwine({
 			getTreeConfig : function () {
 				var self = this,
@@ -33,49 +36,50 @@
 					config.contextmenu.items = function (node) {
 						var menu = _items(node);
 
-						//if (node.hasClass('versioned')) {
-							var unpublish = self.data('urlUnpublishpage'),
-								publish = self.data('urlPublishpage');
+						var unpublish = self.data('urlUnpublishpage'),
+							publish = self.data('urlPublishpage');
 
-							if (publish) {
-								menu.publish = {
-									'label'  : ss.i18n._t('Tree.Publish', 'Publish'),
-									'action' : function (obj) {
-										var id = obj.data('id'),
-											ids = [id];
+						// Allow publishing a page via right click
+						if (publish) {
+							menu.publish = {
+								'label'  : ss.i18n._t('Tree.Publish', 'Publish'),
+								'action' : function (obj) {
+									var id = obj.data('id'),
+										ids = [id];
 
-										cms.entwine('.ss').loadFragment(
-												$.path.addSearchParams(
-													ss.i18n.sprintf(publish, id),
-													self.data('extraParams')
-												), 'SiteTree'
-											).success(function () {
-												self.updateNodesFromServer(ids);
-											});
-									}
-								};
-							}
+									cms.entwine('.ss').loadFragment(
+											$.path.addSearchParams(
+												ss.i18n.sprintf(publish, id),
+												self.data('extraParams')
+											), 'SiteTree'
+										).success(function () {
+											self.updateNodesFromServer(ids);
+										});
+								}
+							};
+						}
 
-							if (unpublish) {
-								menu.unpublish = {
-									'label'  : ss.i18n._t('Tree.Unpublish', 'Unpublish'),
-									'action' : function (obj) {
-										var id = obj.data('id'),
-											ids = [id];
+						// Allow unpublishing a page via right click
+						if (unpublish) {
+							menu.unpublish = {
+								'label'  : ss.i18n._t('Tree.Unpublish', 'Unpublish'),
+								'action' : function (obj) {
+									var id = obj.data('id'),
+										ids = [id];
 
-										cms.entwine('.ss').loadFragment(
-												$.path.addSearchParams(
-													ss.i18n.sprintf(unpublish, id),
-													self.data('extraParams')
-												), 'SiteTree'
-											).success(function () {
-												self.updateNodesFromServer(ids);
-											});
-									}
-								};
-							}
-						//}
+									cms.entwine('.ss').loadFragment(
+											$.path.addSearchParams(
+												ss.i18n.sprintf(unpublish, id),
+												self.data('extraParams')
+											), 'SiteTree'
+										).success(function () {
+											self.updateNodesFromServer(ids);
+										});
+								}
+							};
+						}
 
+						// Allow permanent deletion via right click
 						if (del && !node.hasClass('nodelete')) {
 							menu.delete = {
 								'label'  : ss.i18n._t('Tree.Delete_Permanently', 'Delete permanently'),
@@ -90,7 +94,7 @@
 												), 'SiteTree'
 											).success(function () {
 												var node = self.getNodeByID(id);
-												if(node.length)
+												if (node.length)
 													self.jstree('delete_node', node);
 
 												cms.entwine('.ss').reloadCurrentPanel();
