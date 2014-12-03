@@ -193,7 +193,7 @@ class Utilities implements \TemplateGlobalProvider
 		$files = explode(',', $files);
 
 		foreach($files as $file) {
-			$file = $theme . '/' . $file;
+			$file = $theme ? $theme . '/' . $file : $file;
 			$file = \Director::is_absolute_url($file) ? $file : \Director::getAbsFile($file);
 
 			if (\Director::is_absolute_url($file) || @file_exists($file))
