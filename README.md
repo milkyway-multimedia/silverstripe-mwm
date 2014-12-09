@@ -53,7 +53,7 @@ Add the following to your composer.json file
 ```
 
     "require"          : {
-		"milkyway-multimedia/silverstripe-mwm": "dev-master"
+		"milkyway-multimedia/ss-mwm": "dev-master"
 	}
 
 ```
