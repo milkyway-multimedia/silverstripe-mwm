@@ -1,0 +1,6 @@
+---
+Name: mwm-utility-injector
+---
+Injector:
+  UploadField_SelectHandler:
+    class: \Milkyway\SS\Overrides\UploadField_SelectHandler
