@@ -1,7 +1,5 @@
 <?php namespace Milkyway\SS\Modules;
 
-use Milkyway\SS\Utilities;
-
 /**
  * Milkyway Multimedia
  * ShortcodeForm.php
