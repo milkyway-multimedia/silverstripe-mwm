@@ -50,6 +50,8 @@ class ShortcodableController extends \Extension
 		        );
 	        });
 
+	        natsort($source);
+
             $types->setSource($source);
 
             if ($classname) {
@@ -70,9 +72,7 @@ class ShortcodableController extends \Extension
     }
 
 	protected static function executeOnShortcodeList($callback) {
-		$shortcodes = \ClassInfo::implementorsOf('Milkyway\SS\Shortcodes\Contract');
-
-		foreach(array_diff($shortcodes, (array)\Config::inst()->forClass('ShortcodeParser')->disabled) as $shortcodeClass) {
+		foreach(array_diff((array)\Config::inst()->forClass('ShortcodeParser')->providers, (array)\Config::inst()->forClass('ShortcodeParser')->disabled) as $shortcodeClass) {
 			$shortcode = \Object::create($shortcodeClass);
 
 			foreach((array)$shortcode->code() as $code) {
