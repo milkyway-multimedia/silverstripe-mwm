@@ -1,10 +1,5 @@
 ---
 Name: mwm-shortcodable
----
-ShortcodeParser:
-  disabled:
-    - 'Milkyway\SS\Shortcodes\SiteConfig'
----
 Only:
   moduleexists: 'shortcodable'
 ---
