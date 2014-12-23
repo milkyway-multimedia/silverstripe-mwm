@@ -14,6 +14,8 @@ use Milkyway\SS\Utilities;
 
 class CssIcon implements Contract
 {
+	public static $default_classes = 'fa fa-';
+
 	public function isAvailableForUse($member = null)
 	{
 		return true;
@@ -21,7 +23,19 @@ class CssIcon implements Contract
 
 	public function render($arguments, $caption = null, $parser = null)
 	{
-		return \ArrayData::create($arguments)->renderWith('GoogleFixURL');
+		$content = isset($arguments['use']) ? $arguments['use'] : $caption;
+
+		if(!$content) return '';
+
+		if(isset($arguments['prepend']) && $arguments['prepend'])
+			$prepend = $arguments['prepend'];
+		else
+			$prepend = static::$default_classes;
+
+		if(isset($arguments['classes']) && $arguments['classes'])
+			$content .= ' ' . $arguments['classes'];
+
+		return '<i class="' .  $prepend . $content . '"></i>';
 	}
 
 	public function code()
@@ -58,7 +72,7 @@ class CssIcon implements Contract
 			$iconPrepend = \TextField::create(
 				'prepend',
 				_t('Shortcodable.ICON_PREPEND', 'Prepend')
-			)->setAttribute('placeholder', 'fa fa-');
+			)->setAttribute('placeholder', static::$default_classes);
 		}
 
 		if (\HTMLEditorField::config()->valid_icon_classes) {
