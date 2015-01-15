@@ -40,12 +40,12 @@ class Assets {
         ],
     ];
 
+	protected static $replace = [];
+	protected static $block_ajax = [];
+
     public static function config() {
         return \Config::inst()->forClass('Milkyway_Assets');
     }
-
-    protected static $replace = [];
-    protected static $block_ajax = [];
 
 	public static function get_files_by_type($type, $where = 'first') {
 		if(isset(self::$files[$where]) && isset(self::$files[$where][$type]))
@@ -316,6 +316,13 @@ class Assets_Backend extends \Requirements_Backend {
 		return parent::javascriptTemplate($file, $vars, $uniquenessID);
 	}
 
+	public function add_i18n_javascript($langDir, $return = false, $langOnly = false) {
+		if(in_array($langDir, $this->blocked) || isset($this->blocked[$langDir]))
+			return parent::add_i18n_javascript($langDir, $return, $langOnly);
+
+		return $return ? [] : null;
+	}
+
 	protected function path_for_file($fileOrUrl) {
         if(!Assets::$use_cache_busted_file_extensions)
             return parent::path_for_file($fileOrUrl);
@@ -513,7 +520,7 @@ class Assets_Backend extends \Requirements_Backend {
     protected function issueReplacements()
     {
         foreach(Assets::$disable_replaced_files_for as $class) {
-            if (is_a($this->owner, $class))
+            if (\Controller::curr() && is_a(\Controller::curr(), $class))
                return;
         }
 
