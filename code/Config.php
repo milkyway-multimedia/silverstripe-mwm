@@ -47,10 +47,10 @@ class Config {
                 $value = $findIn[$key];
         }
         elseif(!($value = Original::inst()->get($findIn, $key))) {
-            if(getenv($key))
-                $value = getenv($key);
-            elseif(isset($_ENV[$key]))
-                $value = $_ENV[$key];
+            if(getenv($findIn . '.' . $key))
+                $value = getenv($findIn . '.' . $key);
+            elseif(isset($_ENV[$findIn . '.' . $key]))
+                $value = $_ENV[$findIn . '.' . $key];
         }
 
         if(!$value || !is_array($value) || !count($parts))
