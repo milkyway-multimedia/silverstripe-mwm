@@ -22,6 +22,13 @@ class LeftAndMain extends \LeftAndMainExtension {
 	];
 
 	function onAfterInit() {
+        foreach((array)$this->owner->config()->include_requirements_from_class as $class => $method) {
+            if(is_numeric($class))
+                singleton($method)->includes($this->owner);
+            else
+                singleton($class)->$method($this->owner);
+        }
+
 		\Requirements::javascript(SS_MWM_DIR . '/javascript/mwm.admin.js');
 		Assets::block_ajax('htmlEditorConfig');
 	}

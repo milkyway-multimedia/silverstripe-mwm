@@ -308,7 +308,7 @@ class Assets {
 
 class Assets_Backend extends \Requirements_Backend {
 	public function javascriptTemplate($file, $vars, $uniquenessID = null) {
-		if(defined('INFOBOXES_DIR') && $file = INFOBOXES_DIR . '/javascript/InfoBoxes.js') {
+		if(defined('INFOBOXES_DIR') && $file == INFOBOXES_DIR . '/javascript/InfoBoxes.js') {
 			$uniquenessID = INFOBOXES_DIR . '/javascript/InfoBoxes.js';
 			Assets::block_ajax($uniquenessID);
 		}
