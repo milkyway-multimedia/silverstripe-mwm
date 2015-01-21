@@ -62,7 +62,7 @@ if ( ! function_exists('array_set'))
     }
 }
 
-if ( ! function_exists('array_set'))
+if ( ! function_exists('array_get'))
 {
     /**
      * Get an item from an array using "dot" notation.
