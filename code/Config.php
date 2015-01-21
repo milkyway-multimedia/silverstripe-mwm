@@ -14,19 +14,24 @@ use Config as Original;
 class Config {
     private static $_cache = [];
 
-    public static function get($key, $fromCache = true, $doCache = true) {
+    public static function get($key, $parseEnvVar = null, $fromCache = true, $doCache = true) {
         if($fromCache && isset(static::$_cache[$key]))
             return static::$_cache[$key];
 
         $value = null;
-        $findInEnvironment = function($key) {
+        $findInEnvironment = function($key) use($parseEnvVar) {
+            $value = null;
+
             if(isset($_ENV[$key]))
-                return $_ENV[$key];
+                $value = $_ENV[$key];
 
             if(getenv($key))
-                return getenv($key);
+                $value = getenv($key);
 
-            return null;
+            if(is_callable($parseEnvVar))
+                $value = call_user_func_array($parseEnvVar, [$value, $key]);
+
+            return $value;
         };
 
         if(strpos($key, '.')) {
