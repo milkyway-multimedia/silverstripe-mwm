@@ -18,19 +18,31 @@ class Config {
         if($fromCache && isset(static::$_cache[$key]))
             return static::$_cache[$key];
 
-        $keyParts = explode('.', $key);
         $value = null;
+        $findInEnvironment = function($key) {
+            if(isset($_ENV[$key]))
+                return $_ENV[$key];
 
-        if(count($keyParts) == 1) {
-            if(getenv($keyParts[0]))
-                $value = getenv($keyParts[0]);
-            elseif(isset($_ENV[$keyParts[0]]))
-                $value = $_ENV[$keyParts[0]];
-        }
-        else {
+            if(getenv($key))
+                return getenv($key);
+
+            return null;
+        };
+
+        if(strpos($key, '.')) {
+            $keyParts = explode('.', $key);
             $class = array_shift($keyParts);
-            $value = static::find_from_parts($class, $keyParts);
+
+            $value = array_get((array)Original::inst()->forClass($class), implode('.', $keyParts));
+
+            if(!$value)
+                $value = $findInEnvironment($key);
+
+            if(!$value && count($keyParts) && ($first = $findInEnvironment($class)) && is_array($first))
+                $value = array_get($first, implode('.', $keyParts));
         }
+        else
+            $value = $findInEnvironment($key);
 
         if($doCache)
             static::$_cache[$key] = $value;
@@ -38,24 +50,7 @@ class Config {
         return $value;
     }
 
-    private static function find_from_parts($findIn, $parts = []) {
-        $key = array_shift($parts);
-        $value = null;
-
-        if(is_array($findIn)) {
-            if(isset($findIn[$key]))
-                $value = $findIn[$key];
-        }
-        elseif(!($value = Original::inst()->get($findIn, $key))) {
-            if(getenv($findIn . '.' . $key))
-                $value = getenv($findIn . '.' . $key);
-            elseif(isset($_ENV[$findIn . '.' . $key]))
-                $value = $_ENV[$findIn . '.' . $key];
-        }
-
-        if(!$value || !is_array($value) || !count($parts))
-            return $value;
-        else
-            return static::find_from_parts($value, $parts);
+    public static function set($key, $value = null) {
+        static::$_cache[$key] = $value;
     }
 } 
