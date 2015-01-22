@@ -14,6 +14,15 @@ use Config as Original;
 class Config {
     private static $_cache = [];
 
+    /**
+     * Get a config value from YAML/environment vars using dot notation
+     *
+     * @param string $key
+     * @param Callable $parseEnvVar
+     * @param bool $fromCache
+     * @param bool $doCache
+     * @return mixed|null
+     */
     public static function get($key, $parseEnvVar = null, $fromCache = true, $doCache = true) {
         if($fromCache && isset(static::$_cache[$key]))
             return static::$_cache[$key];
@@ -55,7 +64,23 @@ class Config {
         return $value;
     }
 
+    /**
+     * Set a value manually in the config cache
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public static function set($key, $value = null) {
         static::$_cache[$key] = $value;
+    }
+
+    /**
+     * Remove a value from the config cache
+     *
+     * @param string $key
+     */
+    public static function remove($key) {
+        if(isset(static::$_cache[$key]))
+            unset(static::$_cache[$key]);
     }
 } 

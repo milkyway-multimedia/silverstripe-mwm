@@ -216,7 +216,9 @@ class Assets {
         \Requirements::insertHeadTags('
 	<script>
 		function attachToEvent(element, event, callback) {
-			if(element.addEventListener)
+		    if(window.jQuery)
+		        window.jQuery(element).on(event, callback);
+			else if(element.addEventListener)
 				element.addEventListener(event, callback, false);
 			else if(element.attachEvent)
 				element.attachEvent(event, callback);
@@ -226,15 +228,35 @@ class Assets {
 					element["m"] = callback;
 			}
 		}
+
+		function triggerCustomEvent(element, event, eventArgs) {
+		    if(window.jQuery)
+		        window.jQuery(element).trigger(event, eventArgs);
+		    else {
+		        var customEvent;
+
+		        if (window.CustomEvent) {
+                    customEvent = new CustomEvent(event, {detail: eventArgs});
+                }
+                else if(document.createEvent) {
+                  customEvent = document.createEvent("CustomEvent");
+                  customEvent.initCustomEvent(event, true, true, eventArgs);
+                }
+
+                el.dispatchEvent(customEvent);
+		    }
+		}
 	</script>
 		', 'JS-EventAttachment');
     }
 
     public static function defer_css(array $css, $function = 'css') {
+        $css = json_encode($css, JSON_UNESCAPED_SLASHES);
+
         return '
     function ' . $function . '() {
 		var element,
-			files = ' . json_encode($css, JSON_UNESCAPED_SLASHES) . ',
+			files = ' . $css . ',
 			links = document.getElementsByTagName("link"),
 			included = false;
 
@@ -263,14 +285,23 @@ class Assets {
 				document.getElementsByTagName("head")[0].appendChild(element);
 			}
 		}
+
+		if(typeof window.triggerCustomEvent === "function") {
+		    window.triggerCustomEvent(window, "mwm::injected:css", [ ' . $css . ' ]);
+		}
+		else if (window.jQuery) {
+		    window.jQuery(window).trigger("mwm::injected:css", [ ' . $css . ' ]);
+		}
 	}';
     }
 
     public static function defer_scripts(array $scripts, $function = 'js') {
+        $scripts = json_encode(array_keys($scripts), JSON_UNESCAPED_SLASHES);
+
         return '
     function ' . $function . '() {
 		var element,
-			files = ' . json_encode(array_keys($scripts), JSON_UNESCAPED_SLASHES) . ',
+			files = ' . $scripts . ',
 			scripts = document.getElementsByTagName("script"),
 			included = false;
 
@@ -290,6 +321,13 @@ class Assets {
 		    element = document.createElement("script");
 		    element.src = files[i];
 		    document.getElementsByTagName("body")[0].appendChild(element);
+		}
+
+		if(typeof window.triggerCustomEvent === "function") {
+		    window.triggerCustomEvent(window, "mwm::injected:js", [ ' . $scripts . ' ]);
+		}
+		else if (window.jQuery) {
+		    window.jQuery(window).trigger("mwm::injected:js", [ ' . $scripts . ' ]);
 		}
 	}';
     }
