@@ -258,7 +258,27 @@ class Assets {
 		var element,
 			files = ' . $css . ',
 			links = document.getElementsByTagName("link"),
-			included = false;
+			included = false,
+			triggerOnLoad = function(file) {
+			    if(typeof window.triggerCustomEvent === "function") {
+                    window.triggerCustomEvent(window, "mwm::loaded:css", [file]);
+                }
+                else if (window.jQuery) {
+                    window.jQuery(window).trigger("mwm::loaded:css", [file]);
+                }
+			},
+			attachOnLoad = function(file) {
+		        if(typeof window.attachToEvent === "function") {
+                    window.attachToEvent(file, "load", function() {
+                        triggerOnLoad(file);
+                    });
+                }
+                else if (window.jQuery) {
+                    window.jQuery(file).on("load", function() {
+                        triggerOnLoad(file);
+                    });
+                }
+			};
 
 		for (var file in files) {
 			if (files.hasOwnProperty(file)) {
@@ -283,6 +303,8 @@ class Assets {
 					element.media = files.file.media;
 
 				document.getElementsByTagName("head")[0].appendChild(element);
+
+				attachOnLoad(element);
 			}
 		}
 
@@ -303,7 +325,27 @@ class Assets {
 		var element,
 			files = ' . $scripts . ',
 			scripts = document.getElementsByTagName("script"),
-			included = false;
+			included = false,
+			triggerOnLoad = function(file) {
+			    if(typeof window.triggerCustomEvent === "function") {
+                    window.triggerCustomEvent(window, "mwm::loaded:js", [file]);
+                }
+                else if (window.jQuery) {
+                    window.jQuery(window).trigger("mwm::loaded:js", [file]);
+                }
+			},
+			attachOnLoad = function(file) {
+		        if(typeof window.attachToEvent === "function") {
+                    window.attachToEvent(file, "load", function() {
+                        triggerOnLoad(file);
+                    });
+                }
+                else if (window.jQuery) {
+                    window.jQuery(file).on("load", function() {
+                        triggerOnLoad(file);
+                    });
+                }
+			};
 
 		for (var i = 0; i < files.length; i++) {
 			for (var j = scripts.length; j--;) {
@@ -321,13 +363,8 @@ class Assets {
 		    element = document.createElement("script");
 		    element.src = files[i];
 		    document.getElementsByTagName("body")[0].appendChild(element);
-		}
 
-		if(typeof window.triggerCustomEvent === "function") {
-		    window.triggerCustomEvent(window, "mwm::injected:js", [ ' . $scripts . ' ]);
-		}
-		else if (window.jQuery) {
-		    window.jQuery(window).trigger("mwm::injected:js", [ ' . $scripts . ' ]);
+		    attachOnLoad(element);
 		}
 	}';
     }
