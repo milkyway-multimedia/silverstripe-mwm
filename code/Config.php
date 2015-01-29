@@ -46,8 +46,17 @@ class Config {
         if(strpos($key, '.')) {
             $keyParts = explode('.', $key);
             $class = array_shift($keyParts);
+            $config = Original::inst()->forClass($class);
 
-            $value = array_get((array)Original::inst()->forClass($class), implode('.', $keyParts));
+            $value = $config->{implode('.', $keyParts)};
+
+            if(!$value && count($keyParts) > 1) {
+                $configKey = array_shift($keyParts);
+                $configValue = $config->$configKey;
+
+                if(is_array($configValue))
+                    $value = array_get($configValue, implode('.', $keyParts));
+            }
 
             if(!$value)
                 $value = $findInEnvironment($key);
