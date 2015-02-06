@@ -37,7 +37,7 @@ class Config {
 
 	    foreach($objects as $object) {
 		    if($object && method_exists($object, 'config'))
-		        $mapping = array_merge($mapping, (array)$object->config()->mapping);
+		        $mapping = array_merge($mapping, (array)$object->config()->db_to_environment_mapping);
 	    }
 
 	    if(isset($mapping[$key]))
