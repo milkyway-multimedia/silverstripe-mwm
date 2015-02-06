@@ -13,8 +13,8 @@ class UploadField_SelectHandler extends \UploadField_SelectHandler {
 	protected function getListField($folderID) {
 		$field = parent::getListField($folderID);
 
-		if($this->parent->getConfig('listDataClass')) {
-			if($files = $field->fieldByName('Files'))
+		if(($this->parent instanceof \UploadField) && $this->parent->getConfig('listDataClass')) {
+			if(($files = $field->fieldByName('Files')))
 				$files->setList(\DataList::create($this->parent->getConfig('listDataClass'))->filter('ParentID', $folderID));
 		}
 
