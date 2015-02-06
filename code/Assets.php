@@ -392,7 +392,7 @@ class Assets_Backend extends \Requirements_Backend {
 	}
 
 	public function add_i18n_javascript($langDir, $return = false, $langOnly = false) {
-		if(in_array($langDir, $this->blocked) || isset($this->blocked[$langDir]))
+		if(!in_array($langDir, $this->blocked) && !isset($this->blocked[$langDir]))
 			return parent::add_i18n_javascript($langDir, $return, $langOnly);
 
 		return $return ? [] : null;

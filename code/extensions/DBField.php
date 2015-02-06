@@ -151,4 +151,8 @@ class DBField extends \Extension {
         else
             return trim($this->owner->value, $trim);
     }
+
+    public function Contains($contains) {
+        return strpos($this->owner->value, $contains) !== false;
+    }
 } 
