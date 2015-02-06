@@ -1,9 +1,10 @@
 {
-    "name"           : "milkyway-multimedia/ss-mwm",
-    "version"        : "0.1.0",
-    "private"        : true,
-    "dependencies"   : {},
+    "name":            "milkyway-multimedia/ss-mwm",
+    "version":         "0.1.0",
+    "private":         true,
+    "dependencies":    {},
     "devDependencies": {
-        "font-awesome"        : "~4"
+        "bootstrap":    "~3",
+        "font-awesome": "~4"
     }
 }
