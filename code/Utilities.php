@@ -174,6 +174,7 @@ class Utilities implements \TemplateGlobalProvider
 			'canEditCurrentPage',
 			'inlineFile',
 			'placeIMG',
+			'appDir',
 			'is' => 'is_instanceof',
 			'isFrontendEditingEnabled',
 		];
@@ -211,6 +212,10 @@ class Utilities implements \TemplateGlobalProvider
 	public static function canEditCurrentPage()
 	{
 		return ($member = \Member::currentUser()) ? $member->canEdit() : false;
+	}
+
+	public static function appDir() {
+		return project();
 	}
 
 	public static function contentLocale($noTransform = 0)
