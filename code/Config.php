@@ -21,12 +21,12 @@ class Config {
      * @param array $objects
      * @param mixed|null $default
      * @param Callable $parseEnvVarFn
-     * @param array $beforeConfigClassCheckCallbacks
+     * @param array $beforeConfigNamespaceCheckCallbacks
      * @param bool $fromCache
      * @param bool $doCache
      * @return mixed|null
      */
-    public static function get($key, $objects = [], $default = null, $parseEnvVarFn = null, $beforeConfigClassCheckCallbacks = [], $fromCache = true, $doCache = true) {
+    public static function get($key, $objects = [], $default = null, $parseEnvVarFn = null, $beforeConfigNamespaceCheckCallbacks = [], $fromCache = true, $doCache = true) {
 	    foreach($objects as $object) {
 		    if($object && ($object instanceof \ViewableData) && $object->$key)
 			    return $object->$key;
@@ -70,19 +70,19 @@ class Config {
             $keyParts = explode('.', $key);
 
 	        // First part of key can denote multiple classes separated by a pipe (or)
-            $classes = explode('|', array_shift($keyParts));
+            $namespaces = explode('|', array_shift($keyParts));
 
 	        // 2. Check \Config class for original value
-	        foreach($classes as $class) {
+	        foreach($namespaces as $namespace) {
 		        // Do a callback to get a value from a function sent in (this is for checking SiteConfig)
-		        if(isset($beforeConfigClassCheckCallbacks[$class]) && is_callable($beforeConfigClassCheckCallbacks[$class])) {
-			        $value = call_user_func_array($beforeConfigClassCheckCallbacks[$class], [$keyParts, $key]);
+		        if(isset($beforeConfigClassCheckCallbacks[$namespace]) && is_callable($beforeConfigNamespaceCheckCallbacks[$namespace])) {
+			        $value = call_user_func_array($beforeConfigNamespaceCheckCallbacks[$namespace], [$keyParts, $key]);
 
 			        if($value !== null)
 				        break;
 		        }
 
-	            $config = Original::inst()->forClass($class);
+	            $config = Original::inst()->forClass($namespace);
 
 	            $value = $config->{implode('.', $keyParts)};
 
@@ -105,10 +105,10 @@ class Config {
             if($value === null)
                 $value = $findInEnvironment($key);
 
-	        // 5. Otherwise check for key by class in environment
-	        if(!$value && count($classes) > 1) {
-		        foreach($classes as $class) {
-			        $value = $findInEnvironment($class . '.' . implode('.', $keyParts));
+	        // 5. Otherwise check for key by namespace in environment
+	        if($value === null && count($namespaces) > 1) {
+		        foreach($namespaces as $namespace) {
+			        $value = $findInEnvironment($namespace . '.' . implode('.', $keyParts));
 
 			        if($value !== null)
 				        break;
@@ -116,14 +116,19 @@ class Config {
 	        }
 
 	        // 6. Otherwise check for key recursively in environment
-            if(!$value && count($keyParts)) {
-	            foreach($classes as $class) {
-		            if(($first = $findInEnvironment($class)) && is_array($first)) {
+            if($value === null && count($keyParts)) {
+	            foreach($namespaces as $namespace) {
+		            if(($first = $findInEnvironment($namespace)) && is_array($first)) {
 			            $value = array_get($first, implode('.', $keyParts));
 
 			            if($value !== null)
 				            break;
 		            }
+	            }
+
+	            // 7. Otherwise, check for key as is (without namespaces, a global override to assume)
+	            if($value === null) {
+		            $value = $findInEnvironment(implode('.', $keyParts));
 	            }
             }
         }
