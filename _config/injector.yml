@@ -3,7 +3,14 @@ Name: mwm-utility-injector
 ---
 Injector:
   UploadField_SelectHandler:
-    class: \Milkyway\SS\Overrides\UploadField_SelectHandler
+    class: 'Milkyway\SS\Overrides\UploadField_SelectHandler'
+
+  env:
+    class: 'Milkyway\SS\Config'
+
+  assets:
+    class: 'Milkyway\SS\Assets'
+
 ShortcodeParser:
   providers:
     - 'Milkyway\SS\Shortcodes\CssIcon'
