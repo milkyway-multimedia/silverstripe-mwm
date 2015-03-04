@@ -78,7 +78,7 @@ class Config {
 		        if(isset($beforeConfigClassCheckCallbacks[$class]) && is_callable($beforeConfigClassCheckCallbacks[$class])) {
 			        $value = call_user_func_array($beforeConfigClassCheckCallbacks[$class], [$keyParts, $key]);
 
-			        if($value)
+			        if($value !== null)
 				        break;
 		        }
 
@@ -97,12 +97,12 @@ class Config {
 			            $value = $configValue;
 	            }
 
-		        if($value)
+		        if($value !== null)
 			        break;
 	        }
 
 	        // 4. Check environment for key explicitly
-            if(!$value)
+            if($value === null)
                 $value = $findInEnvironment($key);
 
 	        // 5. Otherwise check for key by class in environment
@@ -110,7 +110,7 @@ class Config {
 		        foreach($classes as $class) {
 			        $value = $findInEnvironment($class . '.' . implode('.', $keyParts));
 
-			        if($value)
+			        if($value !== null)
 				        break;
 		        }
 	        }
@@ -121,7 +121,7 @@ class Config {
 		            if(($first = $findInEnvironment($class)) && is_array($first)) {
 			            $value = array_get($first, implode('.', $keyParts));
 
-			            if($value)
+			            if($value !== null)
 				            break;
 		            }
 	            }
