@@ -193,32 +193,29 @@ class Utilities implements \TemplateGlobalProvider
 
 		$key = static::clean_cache_key($files, ['theme' => $theme]);
 		$contents = singleton('assets')->cache()->load($key);
+		$isDev = \Director::isDev();
 
-		if(!$contents) {
+		if($contents === false) {
 			$files = explode(',', $files);
 
 			foreach($files as $file) {
 				$file = $theme ? $theme . '/' . $file : $file;
 				$file = \Director::is_absolute_url($file) ? $file : \Director::getAbsFile($file);
 
-				if ((\Director::is_absolute_url($file) || @file_exists($file)) && $contents = @file_get_contents($file)) {
-					if(!\Director::isDev()) {
-						$type = strtok(strtok(pathinfo($file, PATHINFO_EXTENSION), '#'), '?');
+				if ((\Director::is_absolute_url($file) || @file_exists($file))) {
+					$contents = @file_get_contents($file);
 
-						if($type == 'js') {
-							require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR .'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
-							$contents = \JSMin::minify($contents);
-						}
-						elseif($type == 'css') {
-							$contents = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    '], '', preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $contents));
-						}
+					if(!$isDev && $contents) {
+						$contents = singleton('assets')->minify_contents_according_to_type($contents, $file);
+					}
+
+					if(!$isDev) {
+						singleton('assets')->cache()->save($contents, $key);
 					}
 
 					break;
 				}
 			}
-
-			singleton('assets')->cache()->save($contents, $key);
 		}
 
 		return \DBField::create_field('HTMLText', $contents);
