@@ -234,10 +234,10 @@ class Assets extends \Requirements
 
 		if (!$script) {
 			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
-			$script = \JSMin::minify('
+			$script = ('
 				function attachToEvent(element, event, callback) {
 				    if(window.jQuery)
-				        window.jQuery(document).on(event, element, callback);
+				        window.jQuery(element).on(event, callback);
 					else if(element.addEventListener)
 						element.addEventListener(event, callback, false);
 					else if(element.attachEvent)
