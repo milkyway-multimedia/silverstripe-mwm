@@ -26,7 +26,7 @@ class Controller extends \Extension {
                 return;
         }
 
-        Assets::block();
+        Assets::block_default();
 
 	    if(Utilities::isFrontendEditingEnabled())
 		    \Requirements::unblock(THIRDPARTY_DIR . '/jquery-entwine/dist/jquery.entwine-dist.js');

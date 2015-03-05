@@ -31,6 +31,7 @@ class LeftAndMain extends \LeftAndMainExtension {
 
 		\Requirements::javascript(SS_MWM_DIR . '/javascript/mwm.admin.js');
 		Assets::block_ajax('htmlEditorConfig');
+		Assets::block_ajax('googlesuggestfield-script');
 	}
 
 	public function publish_record($request) {

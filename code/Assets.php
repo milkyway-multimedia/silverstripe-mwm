@@ -1,6 +1,6 @@
 <?php namespace Milkyway\SS;
 
-class Assets {
+class Assets extends \Requirements {
     /** @var bool Append the cache busting id as a file extension rather than as a query string */
     public static $use_cache_busted_file_extensions = false;
 
@@ -166,7 +166,7 @@ class Assets {
         }
     }
 
-    public static function block() {
+    public static function block_default() {
         $blocked = (array) self::config()->block;
 
         if(count($blocked)) {
@@ -213,160 +213,187 @@ class Assets {
     }
 
     public static function js_attach_to_event() {
-        \Requirements::insertHeadTags('
-	<script>
-		function attachToEvent(element, event, callback) {
-		    if(window.jQuery)
-		        window.jQuery(element).on(event, callback);
-			else if(element.addEventListener)
-				element.addEventListener(event, callback, false);
-			else if(element.attachEvent)
-				element.attachEvent(event, callback);
-			else {
-				var m = "on" + event;
-				if(element.hasOwnProperty(m))
-					element["m"] = callback;
-			}
-		}
+	    $script = static::cache()->load('JS__EventAttachment');
 
-		function triggerCustomEvent(element, event, eventArgs) {
-		    if(window.jQuery)
-		        window.jQuery(element).trigger(event, eventArgs);
-		    else {
-		        var customEvent;
+	    if(!$script) {
+		    require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR .'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
+		    $script = \JSMin::minify('
+				function attachToEvent(element, event, callback) {
+				    if(window.jQuery)
+				        window.jQuery(document).on(event, element, callback);
+					else if(element.addEventListener)
+						element.addEventListener(event, callback, false);
+					else if(element.attachEvent)
+						element.attachEvent(event, callback);
+					else {
+						var m = "on" + event;
+						if(element.hasOwnProperty(m))
+							element["m"] = callback;
+					}
+				}
 
-		        if (window.CustomEvent) {
-                    customEvent = new CustomEvent(event, {detail: eventArgs});
-                }
-                else if(document.createEvent) {
-                  customEvent = document.createEvent("CustomEvent");
-                  customEvent.initCustomEvent(event, true, true, eventArgs);
-                }
+				function triggerCustomEvent(element, event, eventArgs) {
+				    if(window.jQuery)
+				        window.jQuery(element).trigger(event, eventArgs);
+				    else {
+				        var customEvent;
 
-                el.dispatchEvent(customEvent);
-		    }
-		}
-	</script>
-		', 'JS-EventAttachment');
+				        if (window.CustomEvent) {
+		                    customEvent = new CustomEvent(event, {detail: eventArgs});
+		                }
+		                else if(document.createEvent) {
+		                  customEvent = document.createEvent("CustomEvent");
+		                  customEvent.initCustomEvent(event, true, true, eventArgs);
+		                }
+
+		                el.dispatchEvent(customEvent);
+				    }
+				}
+		    ');
+		    static::cache()->save($script, 'JS__EventAttachment');
+	    }
+
+        \Requirements::insertHeadTags('<script>'.$script.'</script>', 'JS-EventAttachment');
     }
 
     public static function defer_css(array $css, $function = 'css') {
-        $css = json_encode($css, JSON_UNESCAPED_SLASHES);
+	    $script = static::cache()->load('JS__DeferCSS');
 
-        return '
-    function ' . $function . '() {
-		var element,
-			files = ' . $css . ',
-			links = document.getElementsByTagName("link"),
-			included = false,
-			triggerOnLoad = function(file) {
-			    if(typeof window.triggerCustomEvent === "function") {
-                    window.triggerCustomEvent(window, "mwm::loaded:css", [file]);
-                }
-                else if (window.jQuery) {
-                    window.jQuery(window).trigger("mwm::loaded:css", [file]);
-                }
-			},
-			attachOnLoad = function(file) {
-		        if(typeof window.attachToEvent === "function") {
-                    window.attachToEvent(file, "load", function() {
-                        triggerOnLoad(file);
-                    });
-                }
-                else if (window.jQuery) {
-                    window.jQuery(file).on("load", function() {
-                        triggerOnLoad(file);
-                    });
-                }
-			};
+	    if(!$script) {
+		    require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR .'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
+		    $script = \JSMin::minify('
+				function {$FUNCTION}() {
+					var element,
+						files = {$FILES},
+						links = document.getElementsByTagName("link"),
+						included = false,
+						triggerOnLoad = function(file) {
+						    if(typeof window.triggerCustomEvent === "function") {
+			                    window.triggerCustomEvent(window, "mwm::loaded:css", [file]);
+			                }
+			                else if (window.jQuery) {
+			                    window.jQuery(window).trigger("mwm::loaded:css", [file]);
+			                }
+						},
+						attachOnLoad = function(file) {
+					        if(typeof window.attachToEvent === "function") {
+			                    window.attachToEvent(file, "load", function() {
+			                        triggerOnLoad(file);
+			                    });
+			                }
+			                else if (window.jQuery) {
+			                    window.jQuery(file).on("load", function() {
+			                        triggerOnLoad(file);
+			                    });
+			                }
+						};
 
-		for (var file in files) {
-			if (files.hasOwnProperty(file)) {
-				for (var j = links.length; j--;) {
-			        if (links[j].href == file) {
-						included = true;
-						break;
+					for (var file in files) {
+						if (files.hasOwnProperty(file)) {
+							for (var j = links.length; j--;) {
+						        if (links[j].href == file) {
+									included = true;
+									break;
+								}
+						    }
+
+						    if(included) {
+						        included = false;
+						        continue;
+						    }
+
+							element = document.createElement("link");
+							element.href = file;
+							element.rel = "stylesheet";
+							element.type = "text/css";
+
+							if (files.file.media)
+								element.media = files.file.media;
+
+							document.getElementsByTagName("head")[0].appendChild(element);
+
+							attachOnLoad(element);
+						}
 					}
-			    }
 
-			    if(included) {
-			        included = false;
-			        continue;
-			    }
+					if(typeof window.triggerCustomEvent === "function") {
+					    window.triggerCustomEvent(window, "mwm::injected:css", [ {$FILES} ]);
+					}
+					else if (window.jQuery) {
+					    window.jQuery(window).trigger("mwm::injected:css", [ {$FILES} ]);
+					}
+				}
+		    ');
+		    static::cache()->save($script, 'JS__DeferCSS');
+	    }
 
-				element = document.createElement("link");
-				element.href = file;
-				element.rel = "stylesheet";
-				element.type = "text/css";
-
-				if (files.file.media)
-					element.media = files.file.media;
-
-				document.getElementsByTagName("head")[0].appendChild(element);
-
-				attachOnLoad(element);
-			}
-		}
-
-		if(typeof window.triggerCustomEvent === "function") {
-		    window.triggerCustomEvent(window, "mwm::injected:css", [ ' . $css . ' ]);
-		}
-		else if (window.jQuery) {
-		    window.jQuery(window).trigger("mwm::injected:css", [ ' . $css . ' ]);
-		}
-	}';
+	    return str_replace(['function{$FUNCTION}','{$FUNCTION}','{$FILES}'], ['function ' . $function, $$function, json_encode($css, JSON_UNESCAPED_SLASHES)], $script);
     }
 
     public static function defer_scripts(array $scripts, $function = 'js') {
-        $scripts = json_encode(array_keys($scripts), JSON_UNESCAPED_SLASHES);
+	    $script = static::cache()->load('JS__DeferJS');
 
-        return '
-    function ' . $function . '() {
-		var element,
-			files = ' . $scripts . ',
-			scripts = document.getElementsByTagName("script"),
-			included = false,
-			triggerOnLoad = function(file) {
-			    if(typeof window.triggerCustomEvent === "function") {
-                    window.triggerCustomEvent(window, "mwm::loaded:js", [file]);
-                }
-                else if (window.jQuery) {
-                    window.jQuery(window).trigger("mwm::loaded:js", [file]);
-                }
-			},
-			attachOnLoad = function(file) {
-		        if(typeof window.attachToEvent === "function") {
-                    window.attachToEvent(file, "load", function() {
-                        triggerOnLoad(file);
-                    });
-                }
-                else if (window.jQuery) {
-                    window.jQuery(file).on("load", function() {
-                        triggerOnLoad(file);
-                    });
-                }
-			};
+	    if(!$script) {
+		    require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR .'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
+		    $script = \JSMin::minify('
+			    function {$FUNCTION}() {
+					var element,
+						files = {$FILES},
+						scripts = document.getElementsByTagName("script"),
+						included = false,
+						triggerOnLoad = function(file) {
+						    if(typeof window.triggerCustomEvent === "function") {
+			                    window.triggerCustomEvent(window, "mwm::loaded:js", [file]);
+			                }
+			                else if (window.jQuery) {
+			                    window.jQuery(window).trigger("mwm::loaded:js", [file]);
+			                }
+						},
+						attachOnLoad = function(file) {
+					        if(typeof window.attachToEvent === "function") {
+			                    window.attachToEvent(file, "load", function() {
+			                        triggerOnLoad(file);
+			                    });
+			                }
+			                else if (window.jQuery) {
+			                    window.jQuery(file).on("load", function() {
+			                        triggerOnLoad(file);
+			                    });
+			                }
+						};
 
-		for (var i = 0; i < files.length; i++) {
-			for (var j = scripts.length; j--;) {
-		        if (scripts[j].src == files[i]) {
-					included = true;
-					break;
+					for (var i = 0; i < files.length; i++) {
+						for (var j = scripts.length; j--;) {
+					        if (scripts[j].src == files[i]) {
+								included = true;
+								break;
+							}
+					    }
+
+					    if(included) {
+					        included = false;
+					        continue;
+					    }
+
+					    element = document.createElement("script");
+					    element.src = files[i];
+					    document.getElementsByTagName("body")[0].appendChild(element);
+
+					    attachOnLoad(element);
+					}
+
+					if(typeof window.triggerCustomEvent === "function") {
+					    window.triggerCustomEvent(window, "mwm::injected:js", [ {$FILES} ]);
+					}
+					else if (window.jQuery) {
+					    window.jQuery(window).trigger("mwm::injected:js", [ {$FILES} ]);
+					}
 				}
-		    }
+			');
+		    static::cache()->save($script, 'JS__DeferJS');
+	    }
 
-		    if(included) {
-		        included = false;
-		        continue;
-		    }
-
-		    element = document.createElement("script");
-		    element.src = files[i];
-		    document.getElementsByTagName("body")[0].appendChild(element);
-
-		    attachOnLoad(element);
-		}
-	}';
+	    return str_replace(['function{$FUNCTION}','{$FUNCTION}','{$FILES}'], ['function ' . $function, $function, json_encode(array_keys($scripts), JSON_UNESCAPED_SLASHES)], $script);
     }
 
 	public static function include_font_css() {
@@ -374,10 +401,19 @@ class Assets {
 			if(!is_array($fonts))
 				$fonts = [$fonts];
 
-			\Requirements::css($fonts);
+			static::add($fonts);
 		}
 		else
-			\Requirements::css(SS_MWM_DIR . '/thirdparty/font-awesome/css/font-awesome.min.css');
+			static::add(SS_MWM_DIR . '/thirdparty/font-awesome/css/font-awesome.min.css');
+	}
+
+	protected static $cache;
+
+	public static function cache() {
+		if(!static::$cache)
+			static::$cache = \SS_Cache::factory('Milkyway_SS_Assets', 'Output', ['lifetime' => 20000 * 60 * 60]);
+
+		return static::$cache;
 	}
 }
 
@@ -412,6 +448,8 @@ class Assets_Backend extends \Requirements_Backend {
 
 	public function customScript($script, $uniquenessID = null) {
 		if(strpos($script, 'MemberLoginForm')) return '';
+		if(strpos($script, 'http://suggestqueries.google.com/complete/search') !== -1 && !$uniquenessID)
+			$uniquenessID = 'googlesuggestfield-script';
 
 		if($uniquenessID) $this->customScript[$uniquenessID] = $script;
 		else $this->customScript[] = $script;

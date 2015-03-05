@@ -191,17 +191,37 @@ class Utilities implements \TemplateGlobalProvider
 				$theme = project();
 		}
 
-		$files = explode(',', $files);
+		$key = static::clean_cache_key($files, ['theme' => $theme]);
+		$contents = singleton('assets')->cache()->load($key);
 
-		foreach($files as $file) {
-			$file = $theme ? $theme . '/' . $file : $file;
-			$file = \Director::is_absolute_url($file) ? $file : \Director::getAbsFile($file);
+		if(!$contents) {
+			$files = explode(',', $files);
 
-			if (\Director::is_absolute_url($file) || @file_exists($file))
-				return \DBField::create_field('HTMLText', @file_get_contents($file));
+			foreach($files as $file) {
+				$file = $theme ? $theme . '/' . $file : $file;
+				$file = \Director::is_absolute_url($file) ? $file : \Director::getAbsFile($file);
+
+				if ((\Director::is_absolute_url($file) || @file_exists($file)) && $contents = @file_get_contents($file)) {
+					if(!\Director::isDev()) {
+						$type = strtok(strtok(pathinfo($file, PATHINFO_EXTENSION), '#'), '?');
+
+						if($type == 'js') {
+							require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR .'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
+							$contents = \JSMin::minify($contents);
+						}
+						elseif($type == 'css') {
+							$contents = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    '], '', preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $contents));
+						}
+					}
+
+					break;
+				}
+			}
+
+			singleton('assets')->cache()->save($contents, $key);
 		}
 
-		return '';
+		return \DBField::create_field('HTMLText', $contents);
 	}
 
 	public static function canAccessCMS()
@@ -242,21 +262,12 @@ class Utilities implements \TemplateGlobalProvider
 	{
 		$key = preg_replace('/[^a-zA-Z0-9_]/', '', $paragraphs . '_' . $length . '_' . implode('_', $opts));
 
-		if(!($text = self::loremIpsumCache()->load($key))) {
+		if(!($text = singleton('assets')->cache()->load($key))) {
 			$text = @file_get_contents(\Controller::join_links('http://loripsum.net/api', $paragraphs, $length, implode('/', $opts)));
-			self::loremIpsumCache()->save($text, $key);
+			singleton('assets')->cache()->save($text, $key);
 		}
 
 		return $text;
-	}
-
-	protected static $template_cache;
-
-	protected static function loremIpsumCache() {
-		if(!self::$template_cache)
-			self::$template_cache = \SS_Cache::factory('LoremIpsum', 'Output', ['lifetime' => 100000000]);
-
-		return self::$template_cache;
 	}
 
 	/**
@@ -320,5 +331,9 @@ class Utilities implements \TemplateGlobalProvider
 	public static function isFrontendEditingEnabled()
 	{
 		return \ClassInfo::exists('FrontendEditing') && \FrontendEditing::editingEnabled();
+	}
+
+	public static function clean_cache_key($namespace, array $vars = []) {
+		return preg_replace('/[^a-zA-Z0-9_]/', '', $namespace . '_' . urldecode(http_build_query($vars, '', '_')));
 	}
 } 
