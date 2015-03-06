@@ -1,6 +1,6 @@
 <?php namespace Milkyway\SS;
 
-class Assets extends \Requirements
+class Assets extends \Requirements implements \Flushable
 {
 	/** @var bool Append the cache busting id as a file extension rather than as a query string */
 	public static $use_cache_busted_file_extensions = false;
@@ -452,6 +452,10 @@ class Assets extends \Requirements
 			static::$cache = \SS_Cache::factory('Milkyway_SS_Assets', 'Output', ['lifetime' => 20000 * 60 * 60]);
 
 		return static::$cache;
+	}
+
+	public static function flush() {
+		static::cache()->clean();
 	}
 }
 
