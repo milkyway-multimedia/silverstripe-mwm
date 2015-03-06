@@ -234,7 +234,7 @@ class Assets extends \Requirements implements \Flushable
 
 		if (!$script) {
 			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
-			$script = ('
+			$script = \JSMin::minify('
 				function attachToEvent(element, event, callback) {
 				    if(window.jQuery)
 				        window.jQuery(element).on(event, callback);
