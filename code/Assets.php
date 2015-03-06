@@ -466,6 +466,9 @@ class Assets_Backend extends \Requirements_Backend
 		if (defined('INFOBOXES_DIR') && $file == INFOBOXES_DIR . '/javascript/InfoBoxes.js') {
 			$uniquenessID = INFOBOXES_DIR . '/javascript/InfoBoxes.js';
 			Assets::block_ajax($uniquenessID);
+
+			if(isset($vars['Data']) && $vars['Data'] === ']')
+				$vars['Data'] = '[]';
 		}
 
 		return parent::javascriptTemplate($file, $vars, $uniquenessID);
