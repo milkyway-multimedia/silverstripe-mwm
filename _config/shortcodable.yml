@@ -1,5 +1,5 @@
 ---
-Name: mwm-shortcodable
+Name: mwm--shortcodable
 Only:
   moduleexists: 'shortcodable'
 ---

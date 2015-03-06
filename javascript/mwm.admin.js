@@ -1,5 +1,62 @@
 (function ($) {
 	$.entwine('ss', function ($) {
+        // Reload GridField when item is uploaded to folder
+        $('div.ss-upload-to-folder').entwine({
+            onfileuploaddone: function(e, data) {
+                this.reloadGridField();
+            },
+            onfileuploaddestroy: function(e, data) {
+                this.reloadGridField();
+            },
+            reloadGridField: function() {
+                var $self = this;
+
+                setTimeout(function() {
+                    var fileList = $self.closest('form').find('.ss-gridfield');
+                    fileList.reload();
+                }, 10);
+            }
+        });
+
+        // Reload the upload field when the parent folder is changed
+        $('form.uploadfield-form #ParentID .TreeDropdownField').entwine({
+            onchange: function() {
+                var $uploader = this.closest('form').find('input.ss-upload-to-folder:first'),
+                    $this = this;
+
+                if($uploader.length) {
+                    var $uploaderParent = $uploader.parents('.ss-upload-to-folder:first');
+                    config = $uploader.data('config');
+
+                    if(config.url) {
+                        $.get(config.url.substring(0, config.url.indexOf('/upload')) + '?folder=' + this.getValue(), function(html) {
+                            $uploaderParent.replaceWith($this.addFolderIdToUrlsInHTML(html));
+                        });
+                    }
+                }
+            },
+            addFolderIdToUrlsInHTML: function(html) {
+                var folder = this.getValue(),
+                    replacements = {
+                        '\\/upload&quot;':  '\\/upload?folder=' + folder + '&quot;',
+                        '\\/attach&quot;':  '\\/attach?folder=' + folder + '&quot;',
+                        '\\/select&quot;':  '\\/select?folder=' + folder + '&quot;',
+                        '\\/fileexists&quot;':  '\\/fileexists?folder=' + folder + '&quot;'
+                    };
+
+                for (var replace in replacements) {
+                    if (replacements.hasOwnProperty(replace)) {
+                        html = html.replace(new RegExp(this.escapeRegExp(replace), 'g'), replacements[replace]);
+                    }
+                }
+
+                return html;
+            },
+            escapeRegExp: function(expression) {
+                return expression.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            }
+        });
+
 		// Load a tab that matches the hash in current url
 		$('.ss-tabset').entwine({
 			onadd : function () {

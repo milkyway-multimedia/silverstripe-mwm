@@ -1,5 +1,5 @@
 ---
-Name: mwm-utility-extensions
+Name: mwm--extensions
 ---
 Controller:
   extensions:
@@ -16,3 +16,6 @@ DBField:
 Member:
   extensions:
     - Milkyway\SS\Extensions\Member
+UploadField:
+  extensions:
+    - Milkyway\SS\Extensions\UploadField

@@ -235,36 +235,40 @@ class Assets extends \Requirements implements \Flushable
 		if (!$script) {
 			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
 			$script = \JSMin::minify('
-				function attachToEvent(element, event, callback) {
-				    if(window.jQuery)
-				        window.jQuery(element).on(event, callback);
-					else if(element.addEventListener)
-						element.addEventListener(event, callback, false);
-					else if(element.attachEvent)
-						element.attachEvent(event, callback);
-					else {
-						var m = "on" + event;
-						if(element.hasOwnProperty(m))
-							element["m"] = callback;
+				if(typeof window.attachToEvent !== "function") {
+					function attachToEvent(element, event, callback) {
+					    if(window.jQuery)
+					        window.jQuery(element).on(event, callback);
+						else if(element.addEventListener)
+							element.addEventListener(event, callback, false);
+						else if(element.attachEvent)
+							element.attachEvent(event, callback);
+						else {
+							var m = "on" + event;
+							if(element.hasOwnProperty(m))
+								element["m"] = callback;
+						}
 					}
 				}
 
-				function triggerCustomEvent(element, event, eventArgs) {
-				    if(window.jQuery)
-				        window.jQuery(element).trigger(event, eventArgs);
-				    else {
-				        var customEvent;
+				if(typeof window.triggerCustomEvent !== "function") {
+					function triggerCustomEvent(element, event, eventArgs) {
+					    if(window.jQuery)
+					        window.jQuery(element).trigger(event, eventArgs);
+					    else {
+					        var customEvent;
 
-				        if (window.CustomEvent) {
-		                    customEvent = new CustomEvent(event, {detail: eventArgs});
-		                }
-		                else if(document.createEvent) {
-		                  customEvent = document.createEvent("CustomEvent");
-		                  customEvent.initCustomEvent(event, true, true, eventArgs);
-		                }
+					        if (window.CustomEvent) {
+			                    customEvent = new CustomEvent(event, {detail: eventArgs});
+			                }
+			                else if(document.createEvent) {
+			                  customEvent = document.createEvent("CustomEvent");
+			                  customEvent.initCustomEvent(event, true, true, eventArgs);
+			                }
 
-		                el.dispatchEvent(customEvent);
-				    }
+			                el.dispatchEvent(customEvent);
+					    }
+					}
 				}
 		    ');
 			static::cache()->save($script, 'JS__EventAttachment');

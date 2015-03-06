@@ -44,8 +44,9 @@ class Config {
 		    $key = $mapping[$key];
 
 	    // 1. Check cache for valid key and return if found
-        if($fromCache && isset(static::$_cache[$key]))
-            return static::$_cache[$key];
+        if($fromCache && isset(static::$_cache[$key])) {
+            return static::$_cache[$key] === null ? $default : static::$_cache[$key];
+        }
 
         $value = $default;
 
@@ -140,7 +141,7 @@ class Config {
         if($doCache)
             static::$_cache[$key] = $value;
 
-        return $value;
+        return $value === null ? $default : $value;
     }
 
     /**

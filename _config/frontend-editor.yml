@@ -1,5 +1,5 @@
 ---
-Name: mwm-frontend-edit
+Name: mwm--frontend-editor
 Only:
   moduleexists: 'silverstripe-frontend-admin'
 ---

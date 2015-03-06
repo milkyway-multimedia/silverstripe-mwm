@@ -13,9 +13,41 @@ class UploadField_SelectHandler extends \UploadField_SelectHandler {
 	protected function getListField($folderID) {
 		$field = parent::getListField($folderID);
 
-		if(($this->parent instanceof \UploadField) && $this->parent->getConfig('listDataClass')) {
-			if(($files = $field->fieldByName('Files')))
+		if($this->parent && $this->parent->hasMethod('getConfig') && ($files = $field->fieldByName('Files'))) {
+			// Set data class of list (eg. display only images)
+			if($this->parent->getConfig('listDataClass'))
 				$files->setList(\DataList::create($this->parent->getConfig('listDataClass'))->filter('ParentID', $folderID));
+
+			$uploadField = $this->parent;
+			$callbacks = [
+				'UploadField' => function($keyParts, $key) use($uploadField) {
+						if($uploadField->class !== 'UploadField')
+							return $uploadField->config()->{implode('.',$keyParts)};
+
+						return null;
+					}
+			];
+
+			// Limit the number of results in the file list (defaults to 10)
+			$limit = $this->parent->getConfig('listLimit') ?: singleton('env')->get('UploadField.file_list_limit', [], 10, null, $callbacks);
+
+			$files
+				->Config
+				->getComponentByType('GridFieldPaginator')
+				->setItemsPerPage($limit);
+
+			// Add the ability to upload files in the file list
+			if(\Permission::check('CMS_ACCESS_AssetAdmin') && singleton('env')->get('UploadField.allow_file_list_uploads', [], true, null, $callbacks)) {
+				$field->insertAfter($uploader = \UploadField::create('File_Uploader', ''), 'Files');
+
+				$uploader->setConfig('canAttachExisting', false);
+				$uploader->addExtraClass('ss-upload-to-folder');
+
+				if($folderID && ($folder = \Folder::get()->byID($folderID))) {
+					$path = strpos($folder->RelativePath, ASSETS_DIR . '/') === 0 ? substr($folder->RelativePath, strlen(ASSETS_DIR . '/')) : $folder->RelativePath;
+					$uploader->setFolderName($path);
+				}
+			}
 		}
 
 		parent::extend('updateListField', $field, $folderID);
