@@ -34,6 +34,7 @@ class Config {
 
 	    // Grab mapping from object
 	    $mapping = (array)Original::inst()->get('environment', 'mapping');
+	    $objects = array_reverse($objects, true);
 
 	    foreach($objects as $object) {
 		    if($object && method_exists($object, 'config'))
