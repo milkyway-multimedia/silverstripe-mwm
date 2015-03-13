@@ -172,11 +172,13 @@ class Assets extends \Requirements implements \Flushable
 
 	public static function head($file)
 	{
-		if ($file && Director::fileExists($file) && ($ext = pathinfo($file, PATHINFO_EXTENSION)) && ($ext == 'js' || $ext == 'css')) {
+		if ($file && (Director::is_absolute_url($file) || Director::fileExists($file)) && ($ext = pathinfo($file, PATHINFO_EXTENSION)) && ($ext == 'js' || $ext == 'css')) {
+			$file = Director::is_absolute_url($file) ? $file : static::get_cache_busted_file_url($file);
+
 			if ($ext == 'js')
-				static::insertHeadTags('<script src="' . static::get_cache_busted_file_url($file) . '"></script>', $file);
+				static::insertHeadTags('<script src="' . $file . '"></script>', $file);
 			else
-				static::insertHeadTags('<link href="' . static::get_cache_busted_file_url($file) . '" rel="stylesheet" />', $file);
+				static::insertHeadTags('<link href="' . $file . '" rel="stylesheet" />', $file);
 		}
 	}
 
@@ -266,7 +268,7 @@ class Assets extends \Requirements implements \Flushable
 			                  customEvent.initCustomEvent(event, true, true, eventArgs);
 			                }
 
-			                el.dispatchEvent(customEvent);
+							element.dispatchEvent(customEvent);
 					    }
 					}
 				}
