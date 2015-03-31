@@ -14,6 +14,15 @@ use Config as Original;
 class Config {
     private static $_cache = [];
 
+	private static $_defaults = [
+		'objects' => [],
+		'parseEnvVarFn' => null,
+		'beforeConfigNamespaceCheckCallbacks' => [],
+		'mapping' => [],
+		'fromCache' => true,
+		'doCache' => true
+	];
+
     /**
      * Get a config value from DataObject/YAML/environment vars using dot notation
      *
@@ -22,37 +31,42 @@ class Config {
      * @param mixed|null $default
      * @param Callable $parseEnvVarFn
      * @param array $beforeConfigNamespaceCheckCallbacks
+     * @param array $mapping
      * @param bool $fromCache
      * @param bool $doCache
      * @return mixed|null
      */
-    public static function get($key, $objects = [], $default = null, $parseEnvVarFn = null, $beforeConfigNamespaceCheckCallbacks = [], $fromCache = true, $doCache = true) {
-	    foreach($objects as $object) {
+    public static function get($key, $default = null, $params = []) {
+	    $params = array_merge(static::$_defaults, $params);
+
+	    foreach($params['objects'] as $object) {
 		    if($object && ($object instanceof \ViewableData) && $object->$key)
 			    return $object->$key;
 	    }
 
 	    // Grab mapping from object
 	    $mapping = (array)Original::inst()->get('environment', 'mapping');
-	    $objects = array_reverse($objects, true);
+	    $objects = array_reverse($params['objects'], true);
 
 	    foreach($objects as $object) {
 		    if($object && method_exists($object, 'config'))
 		        $mapping = array_merge($mapping, (array)$object->config()->db_to_environment_mapping);
 	    }
 
+	    $mapping = array_merge($mapping, $params['mapping']);
+
 	    if(isset($mapping[$key]))
 		    $key = $mapping[$key];
 
 	    // 1. Check cache for valid key and return if found
-        if($fromCache && isset(static::$_cache[$key])) {
+        if($params['fromCache'] && isset(static::$_cache[$key])) {
             return static::$_cache[$key] === null ? $default : static::$_cache[$key];
         }
 
         $value = $default;
 
 	    // The function to check the $_ENV vars
-        $findInEnvironment = function($key) use($parseEnvVarFn) {
+        $findInEnvironment = function($key) use($params) {
             $value = null;
 
             if(isset($_ENV[$key]))
@@ -61,8 +75,8 @@ class Config {
             if(getenv($key))
                 $value = getenv($key);
 
-            if(is_callable($parseEnvVarFn))
-                $value = call_user_func_array($parseEnvVarFn, [$value, $key]);
+            if(is_callable($params['parseEnvVarFn']))
+                $value = call_user_func_array($params['parseEnvVarFn'], [$value, $key]);
 
             return $value;
         };
@@ -77,8 +91,8 @@ class Config {
 	        // 2. Check \Config class for original value
 	        foreach($namespaces as $namespace) {
 		        // Do a callback to get a value from a function sent in (this is for checking SiteConfig)
-		        if(isset($beforeConfigClassCheckCallbacks[$namespace]) && is_callable($beforeConfigNamespaceCheckCallbacks[$namespace])) {
-			        $value = call_user_func_array($beforeConfigNamespaceCheckCallbacks[$namespace], [$keyParts, $key]);
+		        if(isset($params['beforeConfigNamespaceCheckCallbacks'][$namespace]) && is_callable($params['beforeConfigNamespaceCheckCallbacks'][$namespace])) {
+			        $value = call_user_func_array($params['beforeConfigNamespaceCheckCallbacks'][$namespace], [$keyParts, $key]);
 
 			        if($value !== null)
 				        break;
@@ -139,7 +153,7 @@ class Config {
             $value = $findInEnvironment($key);
         }
 
-        if($doCache)
+        if($params['doCache'])
             static::$_cache[$key] = $value;
 
         return $value === null ? $default : $value;

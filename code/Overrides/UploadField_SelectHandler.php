@@ -29,7 +29,9 @@ class UploadField_SelectHandler extends \UploadField_SelectHandler {
 			];
 
 			// Limit the number of results in the file list (defaults to 10)
-			$limit = $this->parent->getConfig('listLimit') ?: singleton('env')->get('UploadField.file_list_limit', [], 10, null, $callbacks);
+			$limit = $this->parent->getConfig('listLimit') ?: singleton('env')->get('UploadField.file_list_limit', 10, [
+				'beforeConfigNamespaceCheckCallbacks' => $callbacks,
+			]);
 
 			$files
 				->Config
@@ -37,7 +39,10 @@ class UploadField_SelectHandler extends \UploadField_SelectHandler {
 				->setItemsPerPage($limit);
 
 			// Add the ability to upload files in the file list
-			if(\Permission::check('CMS_ACCESS_AssetAdmin') && singleton('env')->get('UploadField.allow_file_list_uploads', [], true, null, $callbacks)) {
+			if(\Permission::check('CMS_ACCESS_AssetAdmin') && singleton('env')->get('UploadField.allow_file_list_uploads', true, [
+					'beforeConfigNamespaceCheckCallbacks' => $callbacks,
+				])
+			) {
 				$field->insertAfter($uploader = \UploadField::create('File_Uploader', ''), 'Files');
 
 				$uploader->setConfig('canAttachExisting', false);

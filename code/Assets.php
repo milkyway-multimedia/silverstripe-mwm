@@ -173,7 +173,7 @@ class Assets extends \Requirements implements \Flushable
 	public static function head($file)
 	{
 		if ($file && (Director::is_absolute_url($file) || Director::fileExists($file)) && ($ext = pathinfo($file, PATHINFO_EXTENSION)) && ($ext == 'js' || $ext == 'css')) {
-			$file = Director::is_absolute_url($file) ? $file : static::get_cache_busted_file_url($file);
+			$file = Director::is_absolute_url($file) ? $file : \Controller::join_links(Director::baseURL(), static::get_cache_busted_file_url($file));
 
 			if ($ext == 'js')
 				static::insertHeadTags('<script src="' . $file . '"></script>', $file);
@@ -232,190 +232,44 @@ class Assets extends \Requirements implements \Flushable
 
 	public static function js_attach_to_event()
 	{
-		$script = static::cache()->load('JS__EventAttachment');
-
-		if (!$script) {
-			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
-			$script = \JSMin::minify('
-				if(typeof window.attachToEvent !== "function") {
-					function attachToEvent(element, event, callback) {
-					    if(window.jQuery)
-					        window.jQuery(element).on(event, callback);
-						else if(element.addEventListener)
-							element.addEventListener(event, callback, false);
-						else if(element.attachEvent)
-							element.attachEvent(event, callback);
-						else {
-							var m = "on" + event;
-							if(element.hasOwnProperty(m))
-								element["m"] = callback;
-						}
-					}
-				}
-
-				if(typeof window.triggerCustomEvent !== "function") {
-					function triggerCustomEvent(element, event, eventArgs) {
-					    if(window.jQuery)
-					        window.jQuery(element).trigger(event, eventArgs);
-					    else {
-					        var customEvent;
-
-					        if (window.CustomEvent) {
-			                    customEvent = new CustomEvent(event, {detail: eventArgs});
-			                }
-			                else if(document.createEvent) {
-			                  customEvent = document.createEvent("CustomEvent");
-			                  customEvent.initCustomEvent(event, true, true, eventArgs);
-			                }
-
-							element.dispatchEvent(customEvent);
-					    }
-					}
-				}
-		    ');
-			static::cache()->save($script, 'JS__EventAttachment');
-		}
-
-		\Requirements::insertHeadTags('<script>' . $script . '</script>', 'JS-EventAttachment');
+		static::utilities_js();
 	}
 
 	public static function defer_css(array $css, $function = 'css')
 	{
+		static::utilities_js();
 		$script = static::cache()->load('JS__DeferCSS');
 
 		if (!$script) {
 			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
 			$script = \JSMin::minify('
 				function {$FUNCTION}() {
-					var element,
-						files = {$FILES},
-						links = document.getElementsByTagName("link"),
-						included = false,
-						triggerOnLoad = function(file) {
-						    if(typeof window.triggerCustomEvent === "function") {
-			                    window.triggerCustomEvent(window, "mwm::loaded:css", [file]);
-			                }
-			                else if (window.jQuery) {
-			                    window.jQuery(window).trigger("mwm::loaded:css", [file]);
-			                }
-						},
-						attachOnLoad = function(file) {
-					        if(typeof window.attachToEvent === "function") {
-			                    window.attachToEvent(file, "load", function() {
-			                        triggerOnLoad(file);
-			                    });
-			                }
-			                else if (window.jQuery) {
-			                    window.jQuery(file).on("load", function() {
-			                        triggerOnLoad(file);
-			                    });
-			                }
-						};
-
-					for (var file in files) {
-						if (files.hasOwnProperty(file)) {
-							for (var j = links.length; j--;) {
-						        if (links[j].href == file) {
-									included = true;
-									break;
-								}
-						    }
-
-						    if(included) {
-						        included = false;
-						        continue;
-						    }
-
-							element = document.createElement("link");
-							element.href = file;
-							element.rel = "stylesheet";
-							element.type = "text/css";
-
-							if (files.file.media)
-								element.media = files.file.media;
-
-							document.getElementsByTagName("head")[0].appendChild(element);
-
-							attachOnLoad(element);
-						}
+					if(window.mwm && window.mwm.hasOwnProperty("utilities") && window.mwm.utilities.hasOwnProperty("deferCssFiles")) {
+						window.mwm.utilities.deferCssFiles({$FILES});
 					}
-
-					if(typeof window.triggerCustomEvent === "function") {
-					    window.triggerCustomEvent(window, "mwm::injected:css", [ {$FILES} ]);
-					}
-					else if (window.jQuery) {
-					    window.jQuery(window).trigger("mwm::injected:css", [ {$FILES} ]);
-					}
-				}
+				};
 		    ');
 			static::cache()->save($script, 'JS__DeferCSS');
 		}
 
 		return str_replace(['function{$FUNCTION}', '{$FUNCTION}', '{$FILES}'], [
-			'function ' . $function, $$function, json_encode($css, JSON_UNESCAPED_SLASHES)
+			'function ' . $function, $function, json_encode($css, JSON_UNESCAPED_SLASHES)
 		], $script);
 	}
 
 	public static function defer_scripts(array $scripts, $function = 'js')
 	{
+		static::utilities_js();
 		$script = static::cache()->load('JS__DeferJS');
 
 		if (!$script) {
 			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
 			$script = \JSMin::minify('
 			    function {$FUNCTION}() {
-					var element,
-						files = {$FILES},
-						scripts = document.getElementsByTagName("script"),
-						included = false,
-						triggerOnLoad = function(file) {
-						    if(typeof window.triggerCustomEvent === "function") {
-			                    window.triggerCustomEvent(window, "mwm::loaded:js", [file]);
-			                }
-			                else if (window.jQuery) {
-			                    window.jQuery(window).trigger("mwm::loaded:js", [file]);
-			                }
-						},
-						attachOnLoad = function(file) {
-					        if(typeof window.attachToEvent === "function") {
-			                    window.attachToEvent(file, "load", function() {
-			                        triggerOnLoad(file);
-			                    });
-			                }
-			                else if (window.jQuery) {
-			                    window.jQuery(file).on("load", function() {
-			                        triggerOnLoad(file);
-			                    });
-			                }
-						};
-
-					for (var i = 0; i < files.length; i++) {
-						for (var j = scripts.length; j--;) {
-					        if (scripts[j].src == files[i]) {
-								included = true;
-								break;
-							}
-					    }
-
-					    if(included) {
-					        included = false;
-					        continue;
-					    }
-
-					    element = document.createElement("script");
-					    element.src = files[i];
-					    document.getElementsByTagName("body")[0].appendChild(element);
-
-					    attachOnLoad(element);
+					if(window.mwm && window.mwm.hasOwnProperty("utilities") && window.mwm.utilities.hasOwnProperty("deferJsFiles")) {
+						window.mwm.utilities.deferJsFiles({$FILES});
 					}
-
-					if(typeof window.triggerCustomEvent === "function") {
-					    window.triggerCustomEvent(window, "mwm::injected:js", [ {$FILES} ]);
-					}
-					else if (window.jQuery) {
-					    window.jQuery(window).trigger("mwm::injected:js", [ {$FILES} ]);
-					}
-				}
+				};
 			');
 			static::cache()->save($script, 'JS__DeferJS');
 		}
@@ -423,6 +277,20 @@ class Assets extends \Requirements implements \Flushable
 		return str_replace(['function{$FUNCTION}', '{$FUNCTION}', '{$FILES}'], [
 			'function ' . $function, $function, json_encode(array_keys($scripts), JSON_UNESCAPED_SLASHES)
 		], $script);
+	}
+
+	public static function utilities_js()
+	{
+//		$script = static::cache()->load('JS__utilities');
+		$script = '';
+
+		if (!$script) {
+//			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
+			$script = /*\JSMin::minify*/(@file_get_contents(\Director::getAbsFile(SS_MWM_DIR . '/javascript/mwm.utilities.js')));
+//			static::cache()->save($script, 'JS__utilities');
+		}
+
+		\Requirements::insertHeadTags('<script>' . $script . '</script>', 'JS-MWM-Utilities');
 	}
 
 	public static function include_font_css()
