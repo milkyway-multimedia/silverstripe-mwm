@@ -1,5 +1,7 @@
 <?php namespace Milkyway\SS;
 
+use League\Event\Event;
+
 class Assets extends \Requirements implements \Flushable
 {
 	/** @var bool Append the cache busting id as a file extension rather than as a query string */
@@ -389,19 +391,41 @@ class Assets_Backend extends \Requirements_Backend
 
 	public function includeInHTML($templateFile, $content)
 	{
+		$eventful = singleton('Eventful');
+
+		if($eventful) {
+			$eventful->fire('assets:beforeProcessHtml', $templateFile, $content);
+		}
+
 		$this->assets();
 		$body = parent::includeInHTML($templateFile, $content);
 		$this->attachCustomScriptsToResponse();
+
+		if($eventful) {
+			$eventful->fire('assets:afterProcessHtml', $body, $templateFile, $content);
+		}
+
 		return $body;
 	}
 
 	public function include_in_response(\SS_HTTPResponse $response)
 	{
+		$eventful = singleton('Eventful');
+
+		if($eventful) {
+			$eventful->fire('assets:beforeProcessResponse', $response);
+		}
+
 		$this->assets();
+
 		parent::include_in_response($response);
 		if (\Director::is_ajax())
 			$this->_response = $response;
 		$this->attachCustomScriptsToResponse();
+
+		if($eventful) {
+			$eventful->fire('assets:afterProcessResponse', $response);
+		}
 	}
 
 	/*
