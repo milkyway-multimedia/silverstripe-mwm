@@ -27,13 +27,8 @@ class Config {
      * Get a config value from DataObject/YAML/environment vars using dot notation
      *
      * @param string $key
-     * @param array $objects
      * @param mixed|null $default
-     * @param Callable $parseEnvVarFn
-     * @param array $beforeConfigNamespaceCheckCallbacks
-     * @param array $mapping
-     * @param bool $fromCache
-     * @param bool $doCache
+     * @param array $params
      * @return mixed|null
      */
     public static function get($key, $default = null, $params = []) {

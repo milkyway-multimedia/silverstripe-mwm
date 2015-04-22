@@ -5,7 +5,7 @@ mwm.utilities = (function (utilities, $) {
 
     publicFunctions['attachToEvent'] = function (element, event, callback) {
         if ($ && $.hasOwnProperty('on'))
-            window.jQuery(element).on(event, callback);
+            $(element).on(event, callback);
         else if (element.addEventListener)
             element.addEventListener(event, callback, false);
         else if (element.attachEvent)
