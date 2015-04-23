@@ -177,5 +177,8 @@ mwm.utilities = (function (utilities, $) {
         }
     }
 
+    if(utilities.hasOwnProperty('loaded'))
+        utilities.loaded = +new Date();
+
     return utilities;
 }(mwm.utilities || {}, window.jQuery || window.zepto || {}));

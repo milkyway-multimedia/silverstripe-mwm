@@ -20,7 +20,8 @@ class Config {
 		'beforeConfigNamespaceCheckCallbacks' => [],
 		'mapping' => [],
 		'fromCache' => true,
-		'doCache' => true
+		'doCache' => true,
+	    'on' => \Config::INHERITED,
 	];
 
     /**
@@ -95,12 +96,12 @@ class Config {
 
 	            $config = Original::inst()->forClass($namespace);
 
-	            $value = $config->{implode('.', $keyParts)};
+	            $value = $config->get(implode('.', $keyParts), $params['on']);
 
 		        // 3. If value not found explicitly, recursively get if array
 	            if(!$value && count($keyParts) > 1) {
 	                $configKey = array_shift($keyParts);
-	                $configValue = $config->$configKey;
+	                $configValue = $config->get($configKey, $params['on']);
 
 	                if(is_array($configValue))
 	                    $value = array_get($configValue, implode('.', $keyParts));
