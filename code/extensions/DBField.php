@@ -155,4 +155,8 @@ class DBField extends \Extension {
     public function Contains($contains) {
         return strpos($this->owner->value, $contains) !== false;
     }
+
+    public function Replace($textToReplace, $replaceWith) {
+        return str_replace($textToReplace, $replaceWith, $this->owner->value);
+    }
 } 

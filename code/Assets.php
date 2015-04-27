@@ -496,7 +496,7 @@ class Assets_Backend extends \Requirements_Backend
 				} else {
 					Assets::js_attach_to_event();
 					$script .= '
-	attachToEvent(window, "load", ' . $function . ');
+	mwm.utilities.attachToEvent(window, "load", ' . $function . ');
 					';
 				}
 
@@ -522,7 +522,7 @@ class Assets_Backend extends \Requirements_Backend
 				} else {
 					Assets::js_attach_to_event();
 					$script .= '
-	attachToEvent(window, "load", ' . $function . ');
+	mwm.utilities.attachToEvent(window, "load", ' . $function . ');
 					';
 				}
 
