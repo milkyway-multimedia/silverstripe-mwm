@@ -113,11 +113,13 @@ mwm.utilities = (function (utilities, $) {
 
             document.getElementsByTagName("body")[0].appendChild(element);
 
-            utilities.attachToEvent(element, 'load', function () {
-                utilities.triggerCustomEvent(window, "mwm::loaded:js", [file]);
-                if (cb)
-                    cb(file);
-            });
+            (function(e, f) {
+                utilities.attachToEvent(e, 'load', function () {
+                    utilities.triggerCustomEvent(window, "mwm::loaded:js", [f]);
+                    if (cb)
+                        cb(f);
+                });
+            })(element, files[i]);
         }
 
         utilities.triggerCustomEvent(window, "mwm::injected:js", [files]);
