@@ -53,7 +53,7 @@ class SiteConfig implements Contract
 			return '<a href="mailto:' . $value . '">' . $caption . '</a>';
 
 		if (filter_var($value, FILTER_VALIDATE_URL) && !isset($arguments['nolink']))
-			return '<a href="' . $value . '">' . $caption . '</a>';
+			return '<a href="' . \Director::absoluteURL($value) . '">' . $caption . '</a>';
 
 		return $value;
 	}

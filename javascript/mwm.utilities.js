@@ -3,17 +3,58 @@ var mwm = window.mwm || {};
 mwm.utilities = (function (utilities, $) {
     var publicFunctions = {};
 
-    publicFunctions['attachToEvent'] = function (element, event, callback) {
-        if ($ && $.hasOwnProperty('on'))
-            $(element).on(event, callback);
-        else if (element.addEventListener)
-            element.addEventListener(event, callback, false);
-        else if (element.attachEvent)
-            element.attachEvent(event, callback);
+    publicFunctions['attachToEvent'] = function (element, event, callback, once) {
+        var callbackFn;
+
+        if ($ && $.hasOwnProperty('on')) {
+            if(once)
+                $(element).once(event, callback);
+            else
+                $(element).on(event, callback);
+        }
+        else if (element.addEventListener) {
+            if(once) {
+                callbackFn = function() {
+                    callback.apply(this, arguments);
+                    window.removeEventListener('click', callbackFn, false);
+                };
+
+                element.addEventListener(event, callbackFn, false);
+            }
+            else {
+                element.addEventListener(event, callback, false);
+            }
+        }
+        else if (element.attachEvent) {
+            if(once) {
+                callbackFn = function() {
+                    callback.apply(this, arguments);
+                    element.detachEvent(event, callbackFn);
+                };
+
+                element.attachEvent(event, callbackFn);
+            }
+            else {
+                element.attachEvent(event, callback);
+            }
+        }
         else {
             var m = "on" + event;
-            if (element.hasOwnProperty(m))
-                element["m"] = callback;
+
+            if (!element.hasOwnProperty(m))
+                return false;
+
+            if(once) {
+                callbackFn = function() {
+                    callback.apply(this, arguments);
+                    element[m] = null;
+                };
+
+                element[m] = callbackFn;
+            }
+            else {
+                element[m] = callback;
+            }
         }
     };
 
