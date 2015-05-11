@@ -466,8 +466,8 @@ class Assets_Backend extends \Requirements_Backend
 		$lastCss = Assets::get_files_by_type('css', 'last');
 		$lastJs = Assets::get_files_by_type('js', 'last');
 
-		$this->css = array_merge(($firstCss + $this->css), $lastCss);
-		$this->javascript = array_merge(($firstJs + $this->javascript), $lastJs);
+		$this->css = array_merge(($firstCss + array_diff_key($this->css, $firstCss, $lastCss)), $lastCss);
+		$this->javascript = array_merge(($firstJs + array_diff_key($this->javascript, $firstJs, $lastJs)), $lastJs);
 
 		$this->issueReplacements();
 

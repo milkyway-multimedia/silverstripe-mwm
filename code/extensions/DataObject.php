@@ -1,4 +1,6 @@
 <?php namespace Milkyway\SS\Extensions;
+use Milkyway\SS\Utilities;
+
 /**
  * Milkyway Multimedia
  * DataObject.php
@@ -26,5 +28,13 @@ class DataObject extends \DataExtension {
 
     public function firstOrCreate($filter = [], $additionalData = [], $write = true) {
         return $this->owner->firstOrMake($filter, $additionalData, $write);
+    }
+
+    public function is_a($class) {
+        return Utilities::is_instanceof($class, $this->owner);
+    }
+
+    public function is_not_a($class) {
+        return !Utilities::is_instanceof($class, $this->owner);
     }
 } 
