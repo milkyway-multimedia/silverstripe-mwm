@@ -283,12 +283,17 @@ class Assets extends \Requirements implements \Flushable
 
 	public static function utilities_js()
 	{
-		$script = static::cache()->load('JS__utilities');
+		if(Director::isDev()) {
+			$script = @file_get_contents(Director::getAbsFile(SS_MWM_DIR . '/javascript/mwm.utilities.js'));
+		}
+		else {
+			$script = static::cache()->load('JS__utilities');
 
-		if (!$script) {
-			require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
-			$script = \JSMin::minify(@file_get_contents(\Director::getAbsFile(SS_MWM_DIR . '/javascript/mwm.utilities.js')));
-			static::cache()->save($script, 'JS__utilities');
+			if (!$script) {
+				require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR . 'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
+				$script = \JSMin::minify(@file_get_contents(\Director::getAbsFile(SS_MWM_DIR . '/javascript/mwm.utilities.js')));
+				static::cache()->save($script, 'JS__utilities');
+			}
 		}
 
 		\Requirements::insertHeadTags('<script>' . $script . '</script>', 'JS-MWM-Utilities');

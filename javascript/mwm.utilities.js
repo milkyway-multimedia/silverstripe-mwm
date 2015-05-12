@@ -3,14 +3,20 @@ var mwm = window.mwm || {};
 mwm.utilities = (function (utilities, $) {
     var publicFunctions = {};
 
+    publicFunctions['setJquery'] = function() {
+        if(!$ || !$.hasOwnProperty('on'))
+            $ = window.jQuery || window.zepto || {};
+    };
+
     publicFunctions['attachToEvent'] = function (element, event, callback, once) {
         var callbackFn;
+        utilities.setJquery();
 
         if ($ && $.hasOwnProperty('on')) {
             if(once)
-                $(element).once(event, callback);
+                $(window).once(event, element, callback);
             else
-                $(element).on(event, callback);
+                $(window).on(event, element, callback);
         }
         else if (element.addEventListener) {
             if(once) {
@@ -59,8 +65,10 @@ mwm.utilities = (function (utilities, $) {
     };
 
     publicFunctions['triggerCustomEvent'] = function (element, event, eventArgs) {
+        utilities.setJquery();
+
         if ($ && $.hasOwnProperty('trigger'))
-            $.trigger(event, eventArgs);
+            $(element).trigger(event, eventArgs);
         else {
             var customEvent;
 
@@ -72,11 +80,21 @@ mwm.utilities = (function (utilities, $) {
                 customEvent.initCustomEvent(event, true, true, eventArgs);
             }
 
-            element.dispatchEvent(customEvent);
+            if(element.constructor === Array) {
+                for(var i=0;i<element.length;i++) {
+                    element[i].dispatchEvent(customEvent);
+                }
+            }
+            else if(element)
+                element.dispatchEvent(customEvent);
+            else
+                window.dispatchEvent(customEvent);
         }
     };
 
     publicFunctions['requestViaAjax'] = function (url, type, successCb, errorCb, completeCb) {
+        utilities.setJquery();
+
         var requestType;
 
         if ($ && $.hasOwnProperty('ajax')) {
