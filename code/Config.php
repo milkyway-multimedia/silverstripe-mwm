@@ -55,7 +55,7 @@ class Config {
 		    $key = $mapping[$key];
 
 	    // 1. Check cache for valid key and return if found
-        if($params['fromCache'] && isset(static::$_cache[$key])) {
+        if($params['fromCache'] && array_key_exists($key, static::$_cache)) {
             return static::$_cache[$key] === null ? $default : static::$_cache[$key];
         }
 
