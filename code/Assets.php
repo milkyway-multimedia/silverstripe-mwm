@@ -1,7 +1,5 @@
 <?php namespace Milkyway\SS;
 
-use League\Event\Event;
-
 class Assets extends \Requirements implements \Flushable
 {
 	/** @var bool Append the cache busting id as a file extension rather than as a query string */
@@ -296,7 +294,7 @@ class Assets extends \Requirements implements \Flushable
 			}
 		}
 
-		\Requirements::insertHeadTags('<script>' . $script . '</script>', 'JS-MWM-Utilities');
+		static::insertHeadTags('<script>' . $script . '</script>', 'JS-MWM-Utilities');
 	}
 
 	public static function include_font_css()
@@ -395,18 +393,16 @@ class Assets_Backend extends \Requirements_Backend
 
 	public function includeInHTML($templateFile, $content)
 	{
-		$eventful = singleton('Eventful');
-
-		if($eventful) {
-			$eventful->fire('assets:beforeProcessHtml', $templateFile, $content);
+		if($this->Eventful()) {
+			$this->Eventful()->fire('assets:beforeProcessHtml', $templateFile, $content);
 		}
 
 		$this->assets();
 		$body = parent::includeInHTML($templateFile, $content);
 		$this->attachCustomScriptsToResponse();
 
-		if($eventful) {
-			$eventful->fire('assets:afterProcessHtml', $body, $templateFile, $content);
+		if($this->Eventful()) {
+			$this->Eventful()->fire('assets:afterProcessHtml', $body, $templateFile, $content);
 		}
 
 		return $body;
@@ -414,10 +410,8 @@ class Assets_Backend extends \Requirements_Backend
 
 	public function include_in_response(\SS_HTTPResponse $response)
 	{
-		$eventful = singleton('Eventful');
-
-		if($eventful) {
-			$eventful->fire('assets:beforeProcessResponse', $response);
+		if($this->Eventful()) {
+			$this->Eventful()->fire('assets:beforeProcessResponse', $response);
 		}
 
 		$this->assets();
@@ -427,8 +421,8 @@ class Assets_Backend extends \Requirements_Backend
 			$this->_response = $response;
 		$this->attachCustomScriptsToResponse();
 
-		if($eventful) {
-			$eventful->fire('assets:afterProcessResponse', $response);
+		if($this->Eventful()) {
+			$this->Eventful()->fire('assets:afterProcessResponse', $response);
 		}
 	}
 
@@ -625,5 +619,19 @@ class Assets_Backend extends \Requirements_Backend
 				}
 			}
 		}
+	}
+
+	private $_eventful;
+
+	private function Eventful() {
+		if($this->_eventful !== null)
+			return $this->_eventful;
+
+		if(\Config::inst()->get('Injector', 'Eventful') !== null)
+			$this->_eventful = singleton('Eventful');
+		else
+			$this->_eventful = false;
+
+		return $this->_eventful;
 	}
 }
