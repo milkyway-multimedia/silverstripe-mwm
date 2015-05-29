@@ -15,6 +15,6 @@
 	    "doctrine/inflector"                      : "~1"
     },
     "extra"      : {
-        "installer-name": "mwm"
+        "installer-name": "mwm-utilities"
     }
 }
