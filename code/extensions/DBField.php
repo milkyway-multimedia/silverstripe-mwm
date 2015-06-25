@@ -1,6 +1,5 @@
 <?php namespace Milkyway\SS\Extensions;
 
-use Doctrine\Common\Inflector\Inflector;
 use Milkyway\SS\Utilities;
 
 /**
