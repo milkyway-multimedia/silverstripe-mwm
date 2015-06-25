@@ -11,6 +11,9 @@ Injector:
   assets:
     class: 'Milkyway\SS\Assets'
 
+  s:
+    class: 'Stringy\Stringy'
+
 ShortcodeParser:
   providers:
     - 'Milkyway\SS\Shortcodes\CssIcon'
