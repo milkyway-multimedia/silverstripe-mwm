@@ -57,7 +57,7 @@ class DBField extends \Extension {
      * @return string
      */
     public function CLASSNAME() {
-        return \Convert::raw2htmlname(singleton('s')->camelize());
+        return \Convert::raw2htmlname(singleton('s')->create($this->owner->value)->camelize());
     }
 
     /**

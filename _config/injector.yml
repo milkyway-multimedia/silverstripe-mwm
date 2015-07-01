@@ -13,6 +13,8 @@ Injector:
 
   s:
     class: 'Stringy\Stringy'
+    constructor:
+      0: 'placeholder'
 
 ShortcodeParser:
   providers:
