@@ -5,6 +5,9 @@ Injector:
   UploadField_SelectHandler:
     class: 'Milkyway\SS\Overrides\UploadField_SelectHandler'
 
+  UploadField:
+    class: 'Milkyway\SS\Overrides\UploadField'
+
   env:
     class: 'Milkyway\SS\Config'
 
