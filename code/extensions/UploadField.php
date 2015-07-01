@@ -3,20 +3,26 @@
  * Milkyway Multimedia
  * UploadField.php
  *
- * @package rugwash.com.au
+ * @package milkyway-multimedia/ss-mwm
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
+ * @credit micschk <https://github.com/micschk>
  */
 
 namespace Milkyway\SS\Extensions;
+
+use SS_HTTPRequest;
 
 class UploadField extends \Extension {
 	private static $allowed_actions = [
 		'index',
 	];
 
-	public function beforeCallActionHandler($request, $action) {
+	public function beforeCallActionHandler($request, &$action) {
 		if($this->owner->hasClass('ss-upload-to-folder'))
 			$this->setFolderFromRequest($request);
+
+		if($action == 'upload')
+			$action = 'fixedUpload';
 	}
 
 	public function index($request) {
@@ -33,5 +39,43 @@ class UploadField extends \Extension {
 	protected function getFolderFromRequest($request) {
 		$folderId = $request->getVar('folder');
 		return $folderId ? \Folder::get()->byID($folderId) : null;
+	}
+
+	public function fixedUpload(SS_HTTPRequest $request) {
+		// Use a new request that fixes the postVars to use the $_FILES passed in correct order
+		if(strpos(trim($this->owner->Name, '[]'), '[') !== false) {
+			$request = $this->fixRequestForArrayFields($request);
+		}
+
+		return $this->owner->upload($request);
+	}
+
+	protected function fixRequestForArrayFields(SS_HTTPRequest $request) {
+		$postVars = $request->postVars();
+		$fileVars = array_intersect_key($postVars, $_FILES);
+		$fieldName = $this->owner->Name;
+
+		foreach($fileVars as $name => $attributes) {
+			$nameParts = explode('][', trim(substr($fieldName, strlen($name) + 1), ']'));
+			$newAttributes = [];
+			$newValue = [];
+
+			foreach($attributes as $attributeName => $attributeValues) {
+				$values = array_get($attributeValues, implode('.', $nameParts));
+				array_set($newAttributes, implode('.', $nameParts).'.'.$attributeName, $values);
+				$newValue[$attributeName] = $values;
+			}
+
+			$postVars[$name] = $newAttributes;
+			$postVars[$this->owner->Name] = $newValue;
+		}
+
+		return new SS_HTTPRequest(
+			$request->httpMethod(),
+			$request->getURL(true),
+			$request->getVars(),
+			$postVars,
+			$request->getBody()
+		);
 	}
 } 
