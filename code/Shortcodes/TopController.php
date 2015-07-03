@@ -39,6 +39,9 @@ class TopController implements Contract {
 			$value = $page->hasMethod($field) ? $page->$field() : Utilities::isFrontendEditingEnabled() ? $page->obj($field)->XML() : $page->obj($field)->$type();
 		}
 
+		if(!$value && isset($fields['default']))
+			$value = $parser->parse($fields['default']);
+
 		return $value;
 	}
 
@@ -73,14 +76,18 @@ class TopController implements Contract {
 							'Shortcodable.DESC-CurrentPageField',
 							'Suggested codes: Title, Subtitle, Content, Link, AbsoluteLink'
 						)
-					)->setForm($form),
+					),
+				\TextField::create(
+					'default',
+					_t('Shortcodable.DEFAULT_VALUE', 'Default Value')
+				),
 				\DropdownField::create(
 					'type',
 					_t('Shortcodable.DISPLAY_TYPE', 'Display type'),
 					[
 						'' => 'Nice',
 					]
-				)->setForm($form)
+				)
 			)
 		);
 	}

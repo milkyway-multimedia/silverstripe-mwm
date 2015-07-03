@@ -49,6 +49,9 @@ class User implements Contract {
 		if(!$caption)
 			$caption = $value;
 
+		if(!$value && isset($fields['default']))
+			$value = $parser->parse($fields['default']);
+
 		if(\Email::is_valid_address($value) && !isset($arguments['nolink']))
 			return '<a href="mailto:' . $value . '">' . $caption . '</a>';
 
@@ -82,6 +85,10 @@ class User implements Contract {
 						'field',
 						_t('Shortcodable.FIELD', 'Field'),
 						$shortcodes
+					),
+					\TextField::create(
+						'default',
+						_t('Shortcodable.DEFAULT_VALUE', 'Default Value')
 					),
 					\DropdownField::create(
 						'type',
