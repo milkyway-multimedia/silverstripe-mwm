@@ -59,15 +59,23 @@ class UploadField extends \Extension {
 			$nameParts = explode('][', trim(substr($fieldName, strlen($name) + 1), ']'));
 			$newAttributes = [];
 			$newValue = [];
+			$values = null;
 
 			foreach($attributes as $attributeName => $attributeValues) {
 				$values = array_get($attributeValues, implode('.', $nameParts));
+
+				if(!$values || (is_array($values) && !count($values)))
+					break;
+
 				array_set($newAttributes, implode('.', $nameParts).'.'.$attributeName, $values);
 				$newValue[$attributeName] = $values;
 			}
 
+			if(!$values)
+				continue;
+
 			$postVars[$name] = $newAttributes;
-			$postVars[$this->owner->Name] = $newValue;
+			$postVars[$fieldName] = $newValue;
 		}
 
 		return new SS_HTTPRequest(
