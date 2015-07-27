@@ -1,0 +1,19 @@
+{
+    "js" : [
+        {
+            "src":  [
+                "_assets/js/**/*",
+                "!_assets/js/_*",
+                "!_assets/js/_*/**/*"
+            ],
+            "dest" : "javascript"
+        },
+        {
+            "src"  : [
+                "bower_components/assets/javascript/jquery.js",
+                "bower_components/assets/javascript/utilities.js"
+            ],
+            "dest" : "javascript/mwm.utilities.js"
+        }
+    ]
+}
