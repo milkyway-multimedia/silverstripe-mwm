@@ -1,4 +1,4 @@
-<?php
+<?php namespace Milkyway\SS\Core\Extensions;
 /**
  * Milkyway Multimedia
  * UploadField.php
@@ -8,11 +8,11 @@
  * @credit micschk <https://github.com/micschk>
  */
 
-namespace Milkyway\SS\Extensions;
-
 use SS_HTTPRequest;
+use Extension;
+use Folder;
 
-class UploadField extends \Extension {
+class UploadField extends Extension {
 	private static $allowed_actions = [
 		'index',
 	];
@@ -38,7 +38,7 @@ class UploadField extends \Extension {
 
 	protected function getFolderFromRequest($request) {
 		$folderId = $request->getVar('folder');
-		return $folderId ? \Folder::get()->byID($folderId) : null;
+		return $folderId ? Folder::get()->byID($folderId) : null;
 	}
 
 	public function fixedUpload(SS_HTTPRequest $request) {

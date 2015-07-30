@@ -1,5 +1,4 @@
-<?php namespace Milkyway\SS\Extensions;
-use Milkyway\SS\Utilities;
+<?php namespace Milkyway\SS\Core\Extensions;
 
 /**
  * Milkyway Multimedia
@@ -8,7 +7,10 @@ use Milkyway\SS\Utilities;
  * @package milkyway-multimedia/ss-mwm
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
-class DataObject extends \DataExtension {
+
+use DataExtension;
+
+class DataObject extends DataExtension {
     function i18n_description() {
         return _t(get_class($this->owner).'.DESCRIPTION', $this->owner->config()->description);
     }
@@ -31,10 +33,10 @@ class DataObject extends \DataExtension {
     }
 
     public function is_a($class) {
-        return Utilities::is_instanceof($class, $this->owner);
+        return singleton('mwm')->is_instanceof($class, $this->owner);
     }
 
     public function is_not_a($class) {
-        return !Utilities::is_instanceof($class, $this->owner);
+        return !$this->is_a($class);
     }
 } 

@@ -1,23 +1,26 @@
 Silverstripe Utilities (Milkyway Multimedia)
-======
-**Silverstripe Utilities (Milkyway Multimedia)** are just some additional scripts that are required for some of our modules to function.
+============================================
+Just some additional scripts that are required for some of our modules to function.
 
 Includes:
-- Milkyway\Assets : This is a class that gives additional functionality to the Silverstripe Requirements Engine. The new backend is automatically disabled for the administration section.
-- Milkyway\Director : Some additional controller specific methods and globals
+- singleton('require') : This is a class that gives additional functionality to the Silverstripe Requirements Engine.
+- singleton('mwm') : Some additional methods to help with placeholders etc and adds new globals
+- singleton('director') : Some additional controller specific methods and globals
+- singleton('env') : Allow more flexible configuration, using $_ENV variables and defaulting to DataObjects. Used for a few of my modules.
+- singleton('s') : Some string methods courtesy of the Stringy plugin. Used for a few methods.
 
-### Milkyway\SS\Assets
-This adds a couple of new methods that you can use to better control the Requirements in your front-end (everything except deferring should work on the back end as well)
+### singleton('require')
+This adds a couple of new methods that you can use to better control the Requirements in your front-end.
 
-- Milkyway\SS\Assets::defer($file) : Defer a file (loaded after rest of content has finished downloading, using Google Async method)
-- Milkyway\SS\Assets::inline($file, $top = false) : Inline a file (output contents of file directly to specific section)
-- Milkyway\SS\Assets::replace($old, $new) : Replace any requirement with another requirement (you can replace the jQuery version etc.)
-- Milkyway\SS\Assets::head($file) : Insert a file into the header rather than before the ending body tag
-- Milkyway\SS\Assets::add(array $files, 'first/last/defer/inline/inline-head', $before = '') : Add a requirement to the page in a specific section/way.
-- Milkyway\SS\Assets::remove(array $files, 'first/last/defer/inline/inline-head') : Remove a requirement (only works on those added using this interface). If you leave out the second argument, it will search all requirements and remove it
-- Milkyway\SS\Assets::block_ajax($file|$id) : Block a file/script from loading via AJAX
+- singleton('require')->defer($file) : Defer a file (loaded after rest of content has finished downloading, using Google Async method)
+- singleton('require')->inline($file, $top = false) : Inline a file (output contents of file directly to specific section)
+- singleton('require')->replace($old, $new) : Replace any requirement with another requirement (you can replace the jQuery version etc.)
+- singleton('require')->head($file) : Insert a file into the header rather than before the ending body tag
+- singleton('require')->add(array $files, 'first/last/defer/inline/inline-head', $before = '') : Add a requirement to the page in a specific section/way.
+- singleton('require')->remove(array $files, 'first/last/defer/inline/inline-head') : Remove a requirement (only works on those added using this interface). If you leave out the second argument, it will search all requirements and remove it
+- singleton('require')->block_ajax($file|$id) : Block a file/script from loading via AJAX
 
-### Milkyway\SS\Director
+### singleton('director')
 This extends Director and has a few utility methods related to dealing with the SiteTree and Controllers, and adds some new template globals
 
 - secureBaseURL
@@ -29,7 +32,7 @@ This extends Director and has a few utility methods related to dealing with the 
 - adminLink
 - siteConfig
 
-### Milkyway\SS\Utilities
+### singleton('mwm')
 Some utility methods to deal with some stuff I could not do with vanilla Silverstripe, and also adds some new template globals
 
 - canAccessCMS
@@ -41,11 +44,11 @@ Some utility methods to deal with some stuff I could not do with vanilla Silvers
 ### Shortcodes
 There are some new shortcodes that have been registered (once shortcodes are controlled by YAML config, these can be disabled via that...). These are automatically plugged in to the awesome shortcodes module by sheadawson
 
-- [site_config]
-- [user]
+- [setting field=Title] : Display a field from Site Settings
+- [user field=Name default=Guest] : Display a field from the current logged in member
 - [google_fixurl] : Render the Google Fix URL javascript (good for 404 pages)
-- [current_page]
-- [icon]
+- [current_page field=Title] : Display a field from the current page
+- [icon]mwm[/icon] : Use an icon (defaults to the font awesome set)
 
 ## Install
 Add the following to your composer.json file
@@ -62,7 +65,7 @@ Add the following to your composer.json file
 * MIT
 
 ## Version
-* Version 0.1 - Alpha
+* Version 0.2 - Alpha
 
 ## Contact
 #### Milkyway Multimedia

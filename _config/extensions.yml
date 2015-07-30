@@ -3,19 +3,19 @@ Name: mwm--extensions
 ---
 Controller:
   extensions:
-    - Milkyway\SS\Extensions\Controller
+    - 'Milkyway\SS\Core\Extensions\Controller'
 LeftAndMain:
   extensions:
-    - Milkyway\SS\Extensions\LeftAndMain
+    - 'Milkyway\SS\Core\Extensions\LeftAndMain'
 DataObject:
   extensions:
-    - Milkyway\SS\Extensions\DataObject
+    - 'Milkyway\SS\Core\Extensions\DataObject'
 DBField:
   extensions:
-    - Milkyway\SS\Extensions\DBField
+    - 'Milkyway\SS\Core\Extensions\DBField'
 Member:
   extensions:
-    - Milkyway\SS\Extensions\Member
+    - 'Milkyway\SS\Core\Extensions\Member'
 UploadField:
   extensions:
-    - Milkyway\SS\Extensions\UploadField
+    - 'Milkyway\SS\Core\Extensions\UploadField'

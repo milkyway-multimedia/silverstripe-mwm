@@ -1,8 +1,0 @@
----
-Name: mwm--frontend-editor
-Only:
-  moduleexists: 'silverstripe-frontend-admin'
----
-Injector:
-  FrontendEditingControllerExtension:
-    class: 'Milkyway\SS\Modules\FrontendEditingControllerExtension'

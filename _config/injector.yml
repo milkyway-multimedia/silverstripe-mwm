@@ -6,15 +6,24 @@ Injector:
     class: 'Milkyway\SS\Overrides\UploadField_SelectHandler'
 
   env:
-    class: 'Milkyway\SS\Config'
+    class: 'Milkyway\SS\Core\Config'
 
-  assets:
-    class: 'Milkyway\SS\Assets'
+  require:
+    class: 'Milkyway\SS\Core\Requirements'
+
+  director:
+    class: 'Milkyway\SS\Core\Director'
+
+  mwm:
+    class: 'Milkyway\SS\Utilities'
 
   s:
     class: 'Stringy\Stringy'
     constructor:
       0: 'placeholder'
+
+  assets:
+    class: 'Milkyway\SS\Assets'
 
 ShortcodeParser:
   providers:

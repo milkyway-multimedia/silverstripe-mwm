@@ -1,13 +1,15 @@
 <?php namespace Milkyway\SS;
+
 /**
- * Milkyway Multimedia
- * Parser.php
- *
- * @package milkyway-multimedia/silverstripe-mwm
- * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
+ * @deprecated 0.2 Use Milkyway\SS\Core\Extras\Parser
  */
-class Parser extends \TextParser {
-    public function parse() {
-        return \ShortcodeParser::get_active()->parse($this->content);
+
+use Milkyway\SS\Shortcodes\Extras\TextParser as Original;
+use Deprecation;
+
+class Parser extends Original {
+    public function __construct($content = '') {
+        Deprecation::notice(0.2, "Please use Milkyway\\SS\\Shortcodes\\Extras\\TextParser instead");
+        parent::__construct($content);
     }
 }

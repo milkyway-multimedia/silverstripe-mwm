@@ -1,15 +1,18 @@
-<?php namespace Milkyway\SS\Extensions;
-
-use Milkyway\SS\Utilities;
+<?php namespace Milkyway\SS\Core\Extensions;
 
 /**
  * Milkyway Multimedia
  * DBField.php
  *
- * @package milkyway-multimedia/silverstripe-mwm
+ * @package milkyway-multimedia/ss-mwm
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
-class DBField extends \Extension {
+
+use Extension;
+use Object;
+use Convert;
+
+class DBField extends Extension {
 
     /**
      * Add a default Nice method
@@ -27,7 +30,7 @@ class DBField extends \Extension {
      */
     public function Parse($parser = 'TextParser') {
         if($parser == 'TextParser' || is_subclass_of($parser, 'TextParser')) {
-            $obj = \Object::create($parser, $this->owner->value);
+            $obj = Object::create($parser, $this->owner->value);
             return $obj->parse();
         } else {
             return $this->owner->Nice();
@@ -39,7 +42,7 @@ class DBField extends \Extension {
      * @return false|string
      */
     public function FullCountry() {
-        return Utilities::get_full_country_name($this->owner->value);
+        return singleton('mwm')->get_full_country_name($this->owner->value);
     }
 
     /**
@@ -57,7 +60,7 @@ class DBField extends \Extension {
      * @return string
      */
     public function CLASSNAME() {
-        return \Convert::raw2htmlname(singleton('s')->create($this->owner->value)->camelize());
+        return Convert::raw2htmlname(singleton('s')->create($this->owner->value)->camelize());
     }
 
     /**

@@ -5,7 +5,7 @@ Only:
 ---
 ShortcodableController:
   extensions:
-    - 'Milkyway\SS\Modules\ShortcodableController'
+    - 'Milkyway\SS\Shortcodes\Extensions\ShortcodableController'
 
 Member:
   valid_shortcode_fields:

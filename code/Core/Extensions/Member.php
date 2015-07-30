@@ -1,12 +1,16 @@
-<?php namespace Milkyway\SS\Extensions;
+<?php namespace Milkyway\SS\Core\Extensions;
+
 /**
  * Milkyway Multimedia
  * Member.php
  *
- * @package milkyway-multimedia/silverstripe-mwm
+ * @package milkyway-multimedia/ss-mwm
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
-class Member extends \DataExtension {
+
+use DataExtension;
+
+class Member extends DataExtension {
     protected static $_cache_access_cms = [];
 
     function canAccessCMS($member = null) {
@@ -16,7 +20,7 @@ class Member extends \DataExtension {
         if(isset(self::$_cache_access_cms[$member]))
             return self::$_cache_access_cms[$member];
 
-        $members = \Member::mapInCMSGroups();
+        $members = $this->owner->mapInCMSGroups();
 
         if($members && $members->count())
             $result = $members->offsetExists($member);

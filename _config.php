@@ -3,10 +3,12 @@
 if (!defined('SS_MWM_DIR'))
 	define('SS_MWM_DIR', basename(rtrim(dirname(__FILE__), DIRECTORY_SEPARATOR)));
 
-Requirements::set_backend(new \Milkyway\SS\Assets_Backend());
+Requirements::set_backend(new \Milkyway\SS\Core\RequirementsBackend());
 
 // Register all shortcodes for use with injector and shortcodable module
-\Milkyway\SS\Modules\ShortcodableController::register();
+Milkyway\SS\Shortcodes\Extensions\ShortcodableController::register();
+
+Deprecation::notification_version('0.2', 'mwm-utilities');
 
 /**
  * Credit for following functions goes to taylorotwell (laravel/framework)
