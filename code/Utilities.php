@@ -239,7 +239,7 @@ class Utilities implements \TemplateGlobalProvider
         }
 
         $key = static::clean_cache_key($files, ['theme' => $theme]);
-        $contents = singleton('assets')->cache()->load($key);
+        $contents = singleton('require')->cache()->load($key);
         $isDev = CoreDirector::isDev();
 
         if ($contents === false) {
@@ -309,10 +309,10 @@ class Utilities implements \TemplateGlobalProvider
     {
         $key = preg_replace('/[^a-zA-Z0-9_]/', '', $paragraphs . '_' . $length . '_' . implode('_', $opts));
 
-        if (!($text = singleton('assets')->cache()->load($key))) {
+        if (!($text = singleton('require')->cache()->load($key))) {
             $text = @file_get_contents(Controller::join_links('http://loripsum.net/api', $paragraphs, $length,
                 implode('/', $opts)));
-            singleton('assets')->cache()->save($text, $key);
+            singleton('require')->cache()->save($text, $key);
         }
 
         return $text;

@@ -220,17 +220,17 @@ class RequirementsBackend extends Original {
                     $file = Director::getAbsFile($file);
 
                 $key = Utilities::clean_cache_key($file);
-                $content = singleton('assets')->cache()->load($key);
+                $content = singleton('require')->cache()->load($key);
 
                 if ($content === false) {
                     $content = @file_get_contents($file);
 
                     if ($content && !$isDev) {
-                        $content = singleton('assets')->minify_contents_according_to_type($content, $file);
+                        $content = singleton('require')->minify_contents_according_to_type($content, $file);
                     }
 
                     if(!$isDev)
-                        singleton('assets')->cache()->save($content, $key);
+                        singleton('require')->cache()->save($content, $key);
                 }
 
                 if($content) {
