@@ -3,7 +3,7 @@ Name: mwm--injector
 ---
 Injector:
   UploadField_SelectHandler:
-    class: 'Milkyway\SS\Overrides\UploadField_SelectHandler'
+    class: 'Milkyway\SS\Core\Overrides\UploadField_SelectHandler'
 
   env:
     class: 'Milkyway\SS\Core\Config'

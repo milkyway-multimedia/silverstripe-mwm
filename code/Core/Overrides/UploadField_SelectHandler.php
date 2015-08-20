@@ -53,7 +53,7 @@ class UploadField_SelectHandler extends Original
                         'beforeConfigNamespaceCheckCallbacks' => $callbacks,
                     ])
             ) {
-                $field->insertAfter($uploader = static::create('File_Uploader', ''), 'Files');
+                $field->insertAfter($uploader = $this->parent->create('File_Uploader', ''), 'Files');
 
                 $uploader->setConfig('canAttachExisting', false);
                 $uploader->addExtraClass('ss-upload-to-folder');

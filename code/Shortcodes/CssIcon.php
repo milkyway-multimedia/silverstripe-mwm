@@ -29,8 +29,6 @@ class CssIcon implements Contract
 
     public static $insert_icon_name_as_class = true;
 
-    public static $font_css = 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css';
-
     public function isAvailableForUse($member = null)
     {
         return true;
@@ -45,7 +43,9 @@ class CssIcon implements Contract
         }
 
         if (static::$include_font_css) {
-            singleton('require')->css(static::$font_css);
+            singleton('require')->css(singleton('env')->get('CDN.font-awesome', [
+                'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css',
+            ]));
         }
 
         $prepend = HTMLEditorField::config()->prepend_icon;

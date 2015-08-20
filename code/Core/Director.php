@@ -12,7 +12,7 @@ use Director as Original;
 
 use Object;
 use DB;
-use Config;
+use Config as OriginalConfig;
 use DBField;
 use SS_HTTPResponse;
 use Controller;
@@ -53,7 +53,7 @@ class Director extends Original implements \TemplateGlobalProvider
         if(!class_exists($type)) return;
 
         static::create_page(
-            Config::inst()->get('RootURLController', 'default_homepage_link') ?: 'home',
+            OriginalConfig::inst()->get('RootURLController', 'default_homepage_link') ?: 'home',
             $type,
             [
                 'Title' => _t('Page.DEFAULT_HOME_TITLE', 'Home'),
@@ -231,7 +231,7 @@ class Director extends Original implements \TemplateGlobalProvider
 
     public static function adminLink()
     {
-        return Controller::join_links(Config::inst()->get('AdminRootController', 'url_base'));
+        return Controller::join_links(OriginalConfig::inst()->get('AdminRootController', 'url_base'));
     }
 
     public static function get_template_global_variables()
