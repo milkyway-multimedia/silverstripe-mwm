@@ -43,9 +43,9 @@ class CssIcon implements Contract
         }
 
         if (static::$include_font_css) {
-            singleton('require')->css(singleton('env')->get('CDN.font-awesome', [
-                'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css',
-            ]));
+            singleton('require')->css(singleton('env')->get('CDN.font-awesome',
+                'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css'
+            ));
         }
 
         $prepend = HTMLEditorField::config()->prepend_icon;
