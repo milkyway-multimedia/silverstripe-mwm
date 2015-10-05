@@ -80,7 +80,7 @@ class Requirements extends Original implements \Flushable
         return self::$block_ajax;
     }
 
-    public static function add($files, $where = 'first', $before = '')
+    public static function add($files, $where = 'first', $before = '', $override = '')
     {
         if (is_string($files)) {
             $files = [$files];
@@ -91,7 +91,7 @@ class Requirements extends Original implements \Flushable
         }
 
         foreach ($files as $file) {
-            $type = strtok(strtok(pathinfo($file, PATHINFO_EXTENSION), '#'), '?');
+            $type = $override ?: strtok(strtok(pathinfo($file, PATHINFO_EXTENSION), '#'), '?');
 
             if ($type == 'css' || $type == 'js') {
                 if ($before && isset(self::$files[$where][$before])) {
@@ -141,9 +141,9 @@ class Requirements extends Original implements \Flushable
     }
 
     // Load a requirement as a deferred file (loaded using Google Async)
-    public static function defer($file, $before = '')
+    public static function defer($file, $before = '', $override = '')
     {
-        self::add($file, 'defer', $before);
+        self::add($file, 'defer', $before, $override);
     }
 
     public static function undefer($file)
@@ -151,12 +151,12 @@ class Requirements extends Original implements \Flushable
         self::remove($file, 'defer');
     }
 
-    public static function inline($file, $top = false, $before = '')
+    public static function inline($file, $top = false, $before = '', $override = '')
     {
         if ($top) {
-            self::add($file, 'inline-head', $before);
+            self::add($file, 'inline-head', $before, $override);
         } else {
-            self::add($file, 'inline', $before);
+            self::add($file, 'inline', $before, $override);
         }
     }
 
