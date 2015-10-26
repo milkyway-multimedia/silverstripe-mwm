@@ -356,4 +356,18 @@ class Utilities implements \TemplateGlobalProvider
     {
         return preg_replace('/[^a-zA-Z0-9_]/', '', $namespace . '_' . urldecode(http_build_query($vars, '', '_')));
     }
+
+    public static function raw2htmlid($val) {
+        if(is_array($val)) {
+            foreach($val as $k => $v) {
+                $val[$k] = static::raw2htmlid($v);
+            }
+            return $val;
+        } else {
+            return trim(preg_replace(
+                '/_+/', '_', preg_replace('/[^a-zA-Z0-9\-_:.]+/','_', $val)),
+                '_'
+            );
+        }
+    }
 } 
