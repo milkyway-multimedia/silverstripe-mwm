@@ -9,11 +9,13 @@
  */
 
 use DataExtension;
+use FieldList;
+use PermissionCheckboxSetField_Readonly;
 
 class Member extends DataExtension {
     protected static $_cache_access_cms = [];
 
-    function canAccessCMS($member = null) {
+    public function canAccessCMS($member = null) {
         if(!$member) $member = $this->owner;
         if(is_object($member)) $member = $member->ID;
 
@@ -30,5 +32,20 @@ class Member extends DataExtension {
         self::$_cache_access_cms[$member] = $result;
 
         return $result;
+    }
+
+    public function updateCMSFields(FieldList $fields)
+    {
+        if($currentPermsField = $fields->dataFieldByName('Permissions')) {
+            $fields->replaceField('Permissions', $permsField = PermissionCheckboxSetField_Readonly::create(
+                $currentPermsField->Name,
+                $currentPermsField->Title(),
+                'Permission',
+                'GroupID',
+                $this->owner->getManyManyComponents('Groups')
+            ));
+
+            $permsField->setHiddenPermissions($currentPermsField->HiddenPermissions);
+        }
     }
 } 

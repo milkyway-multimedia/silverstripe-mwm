@@ -16,6 +16,9 @@ DBField:
 Member:
   extensions:
     - 'Milkyway\SS\Core\Extensions\Member'
+Group:
+  extensions:
+    - 'Milkyway\SS\Core\Extensions\Group'
 UploadField:
   extensions:
     - 'Milkyway\SS\Core\Extensions\UploadField'

@@ -5,6 +5,12 @@ Injector:
   UploadField_SelectHandler:
     class: 'Milkyway\SS\Core\Overrides\UploadField_SelectHandler'
 
+  PermissionCheckboxSetField:
+    class: 'Milkyway\SS\Core\Overrides\PermissionCheckboxSetField'
+
+  PermissionCheckboxSetField_Readonly:
+    class: 'Milkyway\SS\Core\Overrides\PermissionCheckboxSetField_Readonly'
+
   env:
     class: 'Milkyway\SS\Core\Config'
 
