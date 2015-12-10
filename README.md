@@ -65,7 +65,7 @@ Add the following to your composer.json file
 * MIT
 
 ## Version
-* Version 0.2 - Alpha
+* Version 0.3 (Alpha)
 
 ## Contact
 #### Milkyway Multimedia
