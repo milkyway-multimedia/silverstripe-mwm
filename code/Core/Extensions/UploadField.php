@@ -64,7 +64,7 @@ class UploadField extends Extension {
 			foreach($attributes as $attributeName => $attributeValues) {
 				$values = array_get($attributeValues, implode('.', $nameParts));
 
-				if(!$values || (is_array($values) && !count($values)))
+				if(!$values || (is_array($values) && empty($values)))
 					break;
 
 				array_set($newAttributes, implode('.', $nameParts).'.'.$attributeName, $values);

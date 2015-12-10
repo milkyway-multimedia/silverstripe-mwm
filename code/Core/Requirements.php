@@ -31,25 +31,25 @@ class Requirements extends Original implements \Flushable
     public static $disable_replaced_files_for = [];
 
     protected static $files = [
-        'first' => [
+        'first'       => [
             'css' => [],
-            'js' => [],
+            'js'  => [],
         ],
-        'last' => [
+        'last'        => [
             'css' => [],
-            'js' => [],
+            'js'  => [],
         ],
-        'defer' => [
+        'defer'       => [
             'css' => [],
-            'js' => [],
+            'js'  => [],
         ],
-        'inline' => [
+        'inline'      => [
             'css' => [],
-            'js' => [],
+            'js'  => [],
         ],
         'inline-head' => [
             'css' => [],
-            'js' => [],
+            'js'  => [],
         ],
     ];
 
@@ -106,13 +106,27 @@ class Requirements extends Original implements \Flushable
                     }
                 } else {
                     if ($type == 'css') {
-                        self::$files[$where][$type][$file] = array('media' => '');
+                        self::$files[$where][$type][$file] = ['media' => ''];
                     } else {
                         self::$files[$where][$type][$file] = true;
                     }
                 }
             }
         }
+    }
+
+    public static function before($files, $before = '', $where = '')
+    {
+        if($where) {
+            return static::add($files, $where, $before);
+        }
+
+       static::backend()->before($files, $before);
+    }
+
+    public static function after($files, $after = '', $where = '')
+    {
+        static::backend()->after($files, $after);
     }
 
     public static function remove($files, $where = '')
@@ -215,28 +229,32 @@ class Requirements extends Original implements \Flushable
     {
         $blocked = (array)self::config()->block;
 
-        if (count($blocked)) {
-            foreach ($blocked as $block) {
-                preg_match_all('/{{([^}]*)}}/', $block, $matches);
+        if (empty($blocked)) {
+            return;
+        }
 
-                if (isset($matches[1]) && count($matches[1])) {
-                    foreach ($matches[1] as $match) {
-                        if (strpos($match, '|') !== false) {
-                            list($const, $default) = explode('|', $match);
-                        } else {
-                            $const = $default = $match;
-                        }
+        foreach ($blocked as $block) {
+            preg_match_all('/{{([^}]*)}}/', $block, $matches);
 
-                        if (defined(trim($const))) {
-                            $block = str_replace('{{' . $match . '}}', constant(trim($const)), $block);
-                        } elseif (trim($default)) {
-                            $block = str_replace('{{' . $match . '}}', trim($default), $block);
-                        }
-                    }
+            if (!isset($matches[1]) || empty($matches[1])) {
+                continue;
+            }
+
+            foreach ($matches[1] as $match) {
+                if (strpos($match, '|') !== false) {
+                    list($const, $default) = explode('|', $match);
+                } else {
+                    $const = $default = $match;
                 }
 
-                Requirements::block($block);
+                if (defined(trim($const))) {
+                    $block = str_replace('{{' . $match . '}}', constant(trim($const)), $block);
+                } elseif (trim($default)) {
+                    $block = str_replace('{{' . $match . '}}', trim($default), $block);
+                }
             }
+
+            Requirements::block($block);
         }
     }
 
@@ -286,7 +304,7 @@ class Requirements extends Original implements \Flushable
         return str_replace(['function{$FUNCTION}', '{$FUNCTION}', '{$FILES}'], [
             'function ' . $function,
             $function,
-            json_encode($css, JSON_UNESCAPED_SLASHES)
+            json_encode($css, JSON_UNESCAPED_SLASHES),
         ], $script);
     }
 
@@ -310,7 +328,7 @@ class Requirements extends Original implements \Flushable
         return str_replace(['function{$FUNCTION}', '{$FUNCTION}', '{$FILES}'], [
             'function ' . $function,
             $function,
-            json_encode(array_keys($scripts), JSON_UNESCAPED_SLASHES)
+            json_encode(array_keys($scripts), JSON_UNESCAPED_SLASHES),
         ], $script);
     }
 

@@ -58,7 +58,7 @@ class Utilities implements \TemplateGlobalProvider
             $record = $record->customise($data);
         }
 
-        if (count($ignore)) {
+        if (!empty($ignore)) {
             foreach ($ignore as $i) {
                 $record->$i = null;
             }

@@ -161,4 +161,8 @@ class DBField extends Extension {
     public function Replace($textToReplace, $replaceWith) {
         return str_replace($textToReplace, $replaceWith, $this->owner->value);
     }
+
+    public function In() {
+        return in_array($this->owner->value, (array)func_get_args());
+    }
 } 

@@ -141,7 +141,7 @@ class Config {
             }
 
             // 6. Otherwise check for key recursively in environment
-            if ($value === null && count($keyParts)) {
+            if ($value === null && !empty($keyParts)) {
                 foreach ($namespaces as $namespace) {
                     if (($first = $findInEnvironment($namespace)) && is_array($first)) {
                         $value = array_get($first, implode('.', $keyParts));

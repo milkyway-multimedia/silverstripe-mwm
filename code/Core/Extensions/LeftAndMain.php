@@ -36,6 +36,10 @@ class LeftAndMain extends LeftAndMainExtension
             }
         }
 
+        if($this->owner instanceof \KickAssets) {
+            return;
+        }
+
         singleton('require')->javascript(SS_MWM_DIR . '/js/mwm.admin.js');
         singleton('require')->block_ajax('htmlEditorConfig');
         singleton('require')->block_ajax('googlesuggestfield-script');

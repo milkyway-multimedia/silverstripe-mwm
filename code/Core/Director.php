@@ -266,7 +266,7 @@ class Director extends Original implements \TemplateGlobalProvider
 
     public static function add_link_data($url, $data = [])
     {
-        if (!count($data)) {
+        if (empty($data)) {
             return $url;
         }
 
@@ -279,13 +279,13 @@ class Director extends Original implements \TemplateGlobalProvider
             if ($query) {
                 @parse_str($url, $current);
 
-                if ($current && count($current)) {
+                if ($current && !empty($current)) {
                     $data = array_merge($data, $current);
                 }
             }
         }
 
-        if (count($data)) {
+        if (!empty($data)) {
             $linkData = [];
 
             foreach ($data as $name => $value) {
@@ -314,7 +314,7 @@ class Director extends Original implements \TemplateGlobalProvider
             unset($vars['url']);
         }
 
-        return count($vars) ? '?' . http_build_query($vars) : '';
+        return empty($vars) ? '' : '?' . http_build_query($vars);
     }
 
     public static function current_site_config()
