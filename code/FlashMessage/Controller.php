@@ -26,6 +26,7 @@ class Controller extends Original
         }
 
         $area = $request->param('Area');
+        singleton('require')->clear();
 
         // If no area specified, do nothing
         if(!$area) {
