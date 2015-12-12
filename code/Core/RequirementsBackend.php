@@ -17,16 +17,86 @@ use Exception;
 
 class RequirementsBackend extends Original
 {
-    public function after($files = [], $after = '') {
-        $javascriptFiles = array_keys($this->javascript);
+    protected $types = [
+        'javascript',
+        'css',
+        'customScript',
+        'customCSS',
+        'customHeadTags',
+    ];
+
+    public function before($files = [], $before = '', $where = '')
+    {
         $done = [];
+        $insertFilesAt = function($position, $files, &$assets) {
+            foreach ($files as $file => $fileAtts) {
+                if(is_int($file)) {
+                    $file = $fileAtts;
+                    $fileAtts = true;
+                }
 
-        foreach($files as $file) {
-            $position = array_search($after, $javascriptFiles);
-
-            if($position !== -1) {
-                $this->javascript = array_merge(array_slice($this->javascript, 0, ($position+1)), [$file => true], array_slice($this->javascript, ($position+1)));
+                $assets = array_merge(array_slice($assets, 0, $position), [$file => $fileAtts],
+                    array_slice($assets, $position));
                 $done[] = $file;
+            }
+        };
+
+        if ($where) {
+            $currentFiles = array_keys($this->$where);
+            $position = array_search($before, $currentFiles);
+
+            if ($position !== -1) {
+                $insertFilesAt($position, $files, $this->$where);
+            }
+        } else {
+            foreach ($this->types as $type) {
+                $currentFiles = array_keys($this->$type);
+                $position = array_search($before, $currentFiles);
+
+                if ($position === -1) {
+                    continue;
+                }
+
+                $insertFilesAt($position, $files, $this->$type);
+            }
+        }
+
+        return $done;
+    }
+
+    public function after($files = [], $after = '', $where = '')
+    {
+        $done = [];
+        $insertFilesAt = function($position, $files, &$assets) {
+            foreach ($files as $file => $fileAtts) {
+                if(is_int($file)) {
+                    $file = $fileAtts;
+                    $fileAtts = true;
+                }
+
+                $assets = array_merge(array_slice($assets, 0, ($position + 1)), [$file => $fileAtts],
+                    array_slice($assets, ($position + 1)));
+                $done[] = $file;
+            }
+        };
+
+        if ($where) {
+            $currentFiles = array_keys($this->$where);
+            $position = array_search($after, $currentFiles);
+
+            if ($position !== -1) {
+                $insertFilesAt($position, $files, $this->$where);
+            }
+        } else {
+            foreach ($this->types as $type) {
+                $currentFiles = array_keys($this->$type);
+                $position = array_search($after, $currentFiles);
+
+                if ($position === -1) {
+                    continue;
+                }
+
+                $insertFilesAt($position, $files, $this->$type);
             }
         }
 
@@ -35,11 +105,12 @@ class RequirementsBackend extends Original
 
     public function javascript($file)
     {
-        if(strpos($file, THIRDPARTY_DIR . '/tinymce/tiny_mce_gzip.php') === 0) {
+        if (strpos($file, THIRDPARTY_DIR . '/tinymce/tiny_mce_gzip.php') === 0) {
             return $this->after([
-                $file
-            ], THIRDPARTY_DIR . '/jquery/jquery.js');
+                $file,
+            ], THIRDPARTY_DIR . '/jquery/jquery.js', 'javascript');
         }
+
         return parent::javascript($file);
     }
 
@@ -152,6 +223,7 @@ class RequirementsBackend extends Original
 
         if (!$this->customScript || empty($this->customScript)) {
             $this->_response = null;
+
             return;
         }
 
@@ -335,22 +407,12 @@ class RequirementsBackend extends Original
 
         if (!empty($replaced)) {
             foreach ($replaced as $old => $new) {
-                if (isset($this->css[$old])) {
-                    $old = $this->css[$old];
-                    unset($this->css[$old]);
-                    $this->css[$new] = $old;
-                } elseif (isset($this->javascript[$old])) {
-                    unset($this->javascript[$old]);
-                    $this->javascript[$new] = true;
-                } elseif (isset($this->customScript[$old])) {
-                    unset($this->customScript[$old]);
-                    $this->customScript[$new] = true;
-                } elseif (isset($this->customCSS[$old])) {
-                    unset($this->customCSS[$old]);
-                    $this->customCSS[$new] = true;
-                } elseif (isset($this->customHeadTags[$old])) {
-                    unset($this->customHeadTags[$old]);
-                    $this->customHeadTags[$new] = true;
+                foreach($this->types as $type) {
+                    if (isset($this->$type[$old])) {
+                        $old = $this->$type[$old];
+                        unset($this->$type[$old]);
+                        $this->$type[$new] = $old;
+                    }
                 }
             }
         }

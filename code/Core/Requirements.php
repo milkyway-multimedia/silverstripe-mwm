@@ -126,7 +126,7 @@ class Requirements extends Original implements \Flushable
 
     public static function after($files, $after = '', $where = '')
     {
-        static::backend()->after($files, $after);
+        static::backend()->after($files, $after, $where);
     }
 
     public static function remove($files, $where = '')

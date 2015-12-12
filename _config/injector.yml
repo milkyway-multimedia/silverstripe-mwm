@@ -22,6 +22,9 @@ Injector:
     constructor:
       0: 'placeholder'
 
+  message:
+    class: 'Milkyway\SS\FlashMessage\Notifier'
+
   assets:
     class: 'Milkyway\SS\Assets'
 

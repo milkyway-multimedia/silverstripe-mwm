@@ -1,11 +1,17 @@
 {
+    "css" : [
+        {
+            "dest" : "css"
+        },
+        {
+            "src"  : [
+                "bower_components/assets/less/plugins/flash-messages.less"
+            ],
+            "dest" : "css/mwm.flash-messages.css"
+        }
+    ],
     "js" : [
         {
-            "src":  [
-                "_assets/js/**/*",
-                "!_assets/js/_*",
-                "!_assets/js/_*/**/*"
-            ],
             "dest" : "js"
         },
         {
@@ -14,6 +20,13 @@
                 "bower_components/assets/javascript/utilities.js"
             ],
             "dest" : "js/mwm.utilities.js"
+        },
+        {
+            "src"  : [
+                "bower_components/assets/javascript/alerts.js",
+                "_assets/js/_merged/mwm.flash-messages.js"
+            ],
+            "dest" : "js/mwm.flash-messages.js"
         }
     ]
 }

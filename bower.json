@@ -4,6 +4,7 @@
     "private":         true,
     "dependencies":    {},
     "devDependencies": {
-        "assets": "git@bitbucket.org:milkyway-multimedia/mwm-common.git"
+        "assets": "git@bitbucket.org:milkyway-multimedia/mwm-common.git",
+        "bootstrap": "~3"
     }
 }
