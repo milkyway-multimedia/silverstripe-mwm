@@ -33,6 +33,9 @@ class Controller extends Original
             return [];
         }
 
+        // Add additional messages via an extension (if you want to call an API etc.)
+        $this->extend('onRefresh', $area, $request);
+
         $response = $this->getResponse();
         $response->addHeader('Content-type', 'application/json');
         $response->setBody(json_encode(singleton('message')->$area()->get()));
