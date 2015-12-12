@@ -21,6 +21,7 @@ use Controller;
 use i18n;
 use Member;
 use FormField;
+use Deprecation;
 
 class Utilities implements \TemplateGlobalProvider
 {
@@ -34,15 +35,13 @@ class Utilities implements \TemplateGlobalProvider
         $secure = false,
         $httpOnly = false
     ) {
-        $domain = ($domain) ? $domain : OriginalConfig::inst()->get('Cookie',
-            'cookie_domain') ?: OriginalConfig::inst()->get('Session', 'cookie_domain');
+        Deprecation::notice('0.2', 'This method is no longer required. Please use Cookie::set');
         Cookie::set($name, $value, $expiry, $path, $domain, $secure, $httpOnly);
     }
 
     public static function force_cookie_expiry($name, $path = null, $domain = null)
     {
-        $domain = ($domain) ? $domain : OriginalConfig::inst()->get('Cookie',
-            'cookie_domain') ?: OriginalConfig::inst()->get('Session', 'cookie_domain');
+        Deprecation::notice('0.2', 'This method is no longer required. Please use Cookie::force_expiry');
         Cookie::force_expiry($name, $path, $domain);
     }
 

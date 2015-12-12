@@ -5,6 +5,8 @@ Injector:
   UploadField_SelectHandler:
     class: 'Milkyway\SS\Core\Overrides\UploadField_SelectHandler'
 
+  Cookie_Backend: Milkyway\SS\Core\CookieJar
+
   env:
     class: 'Milkyway\SS\Core\Config'
 
