@@ -19,9 +19,10 @@ class Controller extends Original
      * @return array|\SS_HTTPResponse|void
      * @throws \SS_HTTPResponse_Exception
      */
-    public function refresh($request) {
+    public function refresh($request)
+    {
         // Only available via AJAX
-        if(!$request->isAjax()) {
+        if (!$request->isAjax()) {
             return $this->httpError(404);
         }
 
@@ -29,7 +30,7 @@ class Controller extends Original
         singleton('require')->clear();
 
         // If no area specified, do nothing
-        if(!$area) {
+        if (!$area) {
             return [];
         }
 
@@ -42,7 +43,8 @@ class Controller extends Original
         return $response;
     }
 
-    public function Link($area = '') {
+    public function Link($area = '')
+    {
         return $this->join_links('notifications', $area);
     }
 }

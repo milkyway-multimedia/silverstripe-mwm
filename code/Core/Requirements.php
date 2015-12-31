@@ -117,11 +117,11 @@ class Requirements extends Original implements \Flushable
 
     public static function before($files, $before = '', $where = '')
     {
-        if($where) {
+        if ($where) {
             return static::add($files, $where, $before);
         }
 
-       static::backend()->before($files, $before);
+        static::backend()->before($files, $before);
     }
 
     public static function after($files, $after = '', $where = '')

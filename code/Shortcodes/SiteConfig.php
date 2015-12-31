@@ -10,7 +10,6 @@
 
 use Milkyway\SS\Utilities;
 use Milkyway\SS\Core\Director;
-
 use DBField;
 use Email;
 use CompositeField;
@@ -138,4 +137,4 @@ class SiteConfig implements Contract
                 )
             );
     }
-} 
+}

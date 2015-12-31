@@ -50,7 +50,7 @@ class CookieJar extends Original
             $value = singleton('env')->get('Session.'.$key);
         }
 
-        if(!$value && $default) {
+        if (!$value && $default) {
             $value = $default;
         }
 

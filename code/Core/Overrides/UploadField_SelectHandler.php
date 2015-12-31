@@ -70,4 +70,4 @@ class UploadField_SelectHandler extends Original
 
         return $field;
     }
-} 
+}

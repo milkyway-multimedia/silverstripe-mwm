@@ -39,4 +39,4 @@ class GoogleFixUrl implements Contract
     {
         return CompositeField::create();
     }
-} 
+}

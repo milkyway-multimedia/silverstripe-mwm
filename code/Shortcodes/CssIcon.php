@@ -56,8 +56,9 @@ class CssIcon implements Contract
             $prepend = static::$default_classes;
         }
 
-        if(static::$insert_icon_name_as_class && strpos($content, $prepend) === 0)
+        if (static::$insert_icon_name_as_class && strpos($content, $prepend) === 0) {
             $prepend = '';
+        }
 
         $prepend = static::$additional_classes . ' ' . $prepend;
 
@@ -85,7 +86,7 @@ class CssIcon implements Contract
 
     public function formField()
     {
-        if(class_exists('FontAwesomeIconPickerField') && static::$use_icon_picker) {
+        if (class_exists('FontAwesomeIconPickerField') && static::$use_icon_picker) {
             $icon = \FontAwesomeIconPickerField::create(
                 'use',
                 _t('Shortcodable.ICON', 'Icon')
@@ -95,10 +96,10 @@ class CssIcon implements Contract
                 ->addExtraClass('icp--css-icon-shortcode')
                 ->setAttribute('data-placement', 'bottomLeft');
 
-            if($validIcons = HTMLEditorField::config()->valid_icon_shortcodes)
+            if ($validIcons = HTMLEditorField::config()->valid_icon_shortcodes) {
                 $icon->setAttribute('data-icons', json_encode(array_keys($validIcons)));
-        }
-        else if (HTMLEditorField::config()->valid_icon_shortcodes) {
+            }
+        } elseif (HTMLEditorField::config()->valid_icon_shortcodes) {
             $icon = DropdownField::create(
                 'use',
                 _t('Shortcodable.ICON', 'Icon'),
@@ -143,4 +144,4 @@ class CssIcon implements Contract
                 )
             );
     }
-} 
+}

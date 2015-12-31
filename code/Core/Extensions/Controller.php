@@ -10,12 +10,11 @@
 
 use Milkyway\SS\Core\Requirements;
 use Milkyway\SS\Director;
-
 use Extension;
 
 class Controller extends Extension
 {
-    function onBeforeInit()
+    public function onBeforeInit()
     {
         foreach (Requirements::$disable_cache_busted_file_extensions_for as $class) {
             if (is_a($this->owner, $class)) {
@@ -98,4 +97,4 @@ class Controller extends Extension
             }
         }
     }
-} 
+}

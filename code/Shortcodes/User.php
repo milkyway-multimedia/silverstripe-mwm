@@ -9,11 +9,9 @@
  */
 
 use Milkyway\SS\Utilities;
-
 use Member;
 use DBField;
 use Email;
-
 use CompositeField;
 use FieldList;
 use TextField;
@@ -138,4 +136,4 @@ class User implements Contract
                 )
             );
     }
-} 
+}

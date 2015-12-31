@@ -10,7 +10,6 @@
 
 use Requirements_Backend as Original;
 use Milkyway\SS\Utilities;
-
 use Config;
 use Controller;
 use Exception;
@@ -28,9 +27,9 @@ class RequirementsBackend extends Original
     public function before($files = [], $before = '', $where = '')
     {
         $done = [];
-        $insertFilesAt = function($position, $files, &$assets) {
+        $insertFilesAt = function ($position, $files, &$assets) {
             foreach ($files as $file => $fileAtts) {
-                if(is_int($file)) {
+                if (is_int($file)) {
                     $file = $fileAtts;
                     $fileAtts = true;
                 }
@@ -67,9 +66,9 @@ class RequirementsBackend extends Original
     public function after($files = [], $after = '', $where = '')
     {
         $done = [];
-        $insertFilesAt = function($position, $files, &$assets) {
+        $insertFilesAt = function ($position, $files, &$assets) {
             foreach ($files as $file => $fileAtts) {
-                if(is_int($file)) {
+                if (is_int($file)) {
                     $file = $fileAtts;
                     $fileAtts = true;
                 }
@@ -407,7 +406,7 @@ class RequirementsBackend extends Original
 
         if (!empty($replaced)) {
             foreach ($replaced as $old => $new) {
-                foreach($this->types as $type) {
+                foreach ($this->types as $type) {
                     if (isset($this->$type[$old])) {
                         $old = $this->$type[$old];
                         unset($this->$type[$old]);
