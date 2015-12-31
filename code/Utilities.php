@@ -179,7 +179,7 @@ class Utilities implements \TemplateGlobalProvider
 
     public static function get_full_country_name($code, $locale = '')
     {
-        if(!$locale) {
+        if (!$locale) {
             $locale = Controller::curr()->Locale;
 
             if (!$locale) {
@@ -356,17 +356,18 @@ class Utilities implements \TemplateGlobalProvider
         return preg_replace('/[^a-zA-Z0-9_]/', '', $namespace . '_' . urldecode(http_build_query($vars, '', '_')));
     }
 
-    public static function raw2htmlid($val) {
-        if(is_array($val)) {
-            foreach($val as $k => $v) {
+    public static function raw2htmlid($val)
+    {
+        if (is_array($val)) {
+            foreach ($val as $k => $v) {
                 $val[$k] = static::raw2htmlid($v);
             }
             return $val;
         } else {
             return trim(preg_replace(
-                '/_+/', '_', preg_replace('/[^a-zA-Z0-9\-_:.]+/','_', $val)),
+                '/_+/', '_', preg_replace('/[^a-zA-Z0-9\-_:.]+/', '_', $val)),
                 '_'
             );
         }
     }
-} 
+}

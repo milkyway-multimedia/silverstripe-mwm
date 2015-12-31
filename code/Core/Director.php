@@ -9,7 +9,6 @@
  */
 
 use Director as Original;
-
 use Object;
 use DB;
 use Config as OriginalConfig;
@@ -50,7 +49,9 @@ class Director extends Original implements \TemplateGlobalProvider
     {
         $type = class_exists('HomePage') ? 'HomePage' : 'Page';
 
-        if(!class_exists($type)) return;
+        if (!class_exists($type)) {
+            return;
+        }
 
         static::create_page(
             OriginalConfig::inst()->get('RootURLController', 'default_homepage_link') ?: 'home',

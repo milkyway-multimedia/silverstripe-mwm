@@ -12,13 +12,15 @@ use Extension;
 use Object;
 use Convert;
 
-class DBField extends Extension {
+class DBField extends Extension
+{
 
     /**
      * Add a default Nice method
      * @return mixed
      */
-    public function Nice() {
+    public function Nice()
+    {
         return $this->owner->forTemplate();
     }
 
@@ -28,8 +30,9 @@ class DBField extends Extension {
      * @param string $parser
      * @return mixed
      */
-    public function Parse($parser = 'TextParser') {
-        if($parser == 'TextParser' || is_subclass_of($parser, 'TextParser')) {
+    public function Parse($parser = 'TextParser')
+    {
+        if ($parser == 'TextParser' || is_subclass_of($parser, 'TextParser')) {
             $obj = Object::create($parser, $this->owner->value);
             return $obj->parse();
         } else {
@@ -41,7 +44,8 @@ class DBField extends Extension {
      * Convert value to a full country name if found
      * @return false|string
      */
-    public function FullCountry() {
+    public function FullCountry()
+    {
         return singleton('mwm')->get_full_country_name($this->owner->value);
     }
 
@@ -50,7 +54,8 @@ class DBField extends Extension {
      * @param bool $lowercase
      * @return string
      */
-    public function HTMLID($lowercase = false) {
+    public function HTMLID($lowercase = false)
+    {
         $str = trim(str_replace(' ', '-', ucwords(str_replace(['_', '-', '/'], ' ', $this->owner->value))), '-');
         return $lowercase ? strtolower($str) : $str;
     }
@@ -59,7 +64,8 @@ class DBField extends Extension {
      * Convert value to an appropriate class name
      * @return string
      */
-    public function CLASSNAME() {
+    public function CLASSNAME()
+    {
         return Convert::raw2htmlname(singleton('s')->create($this->owner->value)->camelize());
     }
 
@@ -67,7 +73,8 @@ class DBField extends Extension {
      * Convert new lines to brs on output
      * @return string
      */
-    public function nl2br() {
+    public function nl2br()
+    {
         return nl2br($this->owner->XML());
     }
 
@@ -80,7 +87,8 @@ class DBField extends Extension {
      *
      * @return string
      */
-    public function nl2list($class = '', $liClass = '', $tag = 'ul') {
+    public function nl2list($class = '', $liClass = '', $tag = 'ul')
+    {
         $val = trim($this->owner->XML(), "\n");
 
         $val = str_replace("\n", sprintf('</li><li%s>', $liClass ? 'class="' . $liClass . '"' : ''), $val);
@@ -97,7 +105,8 @@ class DBField extends Extension {
      *
      * @return mixed
      */
-    public function nl2numbered($class = '', $liClass = '') {
+    public function nl2numbered($class = '', $liClass = '')
+    {
         return $this->owner->nl2list($class, $liClass, 'ol');
     }
 
@@ -105,7 +114,8 @@ class DBField extends Extension {
      * Convert value to a boolean suitable within the CMS
      * @return string
      */
-    public function CMSBoolean() {
+    public function CMSBoolean()
+    {
         return $this->owner->value ? '<span class="ui-button-icon-primary ui-icon btn-icon-accept"></span>' : '<span class="ui-button-icon-primary ui-icon btn-icon-decline"></span>';
     }
 
@@ -113,7 +123,8 @@ class DBField extends Extension {
      * A simple debug view for the value of this field
      * @return string
      */
-    public function debugView() {
+    public function debugView()
+    {
         return '<pre>' . var_export($this->owner->value) . '</pre>';
     }
 
@@ -123,7 +134,8 @@ class DBField extends Extension {
      * @param string $format
      * @return string
      */
-    public function FormatOrUnknown($format = 'Nice') {
+    public function FormatOrUnknown($format = 'Nice')
+    {
         return $this->owner->value && $this->owner->value != '0000-00-00 00:00:00' ? $this->owner->$format() : _t('_UNKNOWN_', '(unknown)');
     }
 
@@ -133,7 +145,8 @@ class DBField extends Extension {
      * @param string $format
      * @return string
      */
-    public function FormatOrNot($format = 'Nice') {
+    public function FormatOrNot($format = 'Nice')
+    {
         return $this->owner->value && $this->owner->value != '0000-00-00 00:00:00' ? $this->owner->$format() : '<span class="ui-button-icon-primary ui-icon btn-icon-decline"></span>';
     }
 
@@ -141,28 +154,34 @@ class DBField extends Extension {
      * Format a clean decimal (no additional zeros)
      * @return string
      */
-    public function CleanDecimal() {
+    public function CleanDecimal()
+    {
         return (float)$this->owner->value;
     }
 
-    public function Trim($trim = null, $direction = '') {
-        if($direction == 'r')
+    public function Trim($trim = null, $direction = '')
+    {
+        if ($direction == 'r') {
             return rtrim($this->owner->value, $trim);
-        elseif($direction == 'l')
+        } elseif ($direction == 'l') {
             return ltrim($this->owner->value, $trim);
-        else
+        } else {
             return trim($this->owner->value, $trim);
+        }
     }
 
-    public function Contains($contains) {
+    public function Contains($contains)
+    {
         return strpos($this->owner->value, $contains) !== false;
     }
 
-    public function Replace($textToReplace, $replaceWith) {
+    public function Replace($textToReplace, $replaceWith)
+    {
         return str_replace($textToReplace, $replaceWith, $this->owner->value);
     }
 
-    public function In() {
+    public function In()
+    {
         return in_array($this->owner->value, (array)func_get_args());
     }
-} 
+}

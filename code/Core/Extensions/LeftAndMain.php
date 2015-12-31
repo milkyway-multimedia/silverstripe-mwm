@@ -26,7 +26,7 @@ class LeftAndMain extends LeftAndMainExtension
         'unpublish-record',
     ];
 
-    function onAfterInit()
+    public function onAfterInit()
     {
         foreach ((array)$this->owner->config()->include_requirements_from_class as $class => $method) {
             if (is_numeric($class)) {
@@ -36,7 +36,7 @@ class LeftAndMain extends LeftAndMainExtension
             }
         }
 
-        if($this->owner instanceof \KickAssets) {
+        if ($this->owner instanceof \KickAssets) {
             return;
         }
 
@@ -203,4 +203,4 @@ class LeftAndMain extends LeftAndMainExtension
 
         return $record;
     }
-} 
+}

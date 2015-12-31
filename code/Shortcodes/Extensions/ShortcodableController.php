@@ -96,4 +96,4 @@ class ShortcodableController extends Extension
             }
         }
     }
-} 
+}

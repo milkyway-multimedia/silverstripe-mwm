@@ -11,7 +11,8 @@
 use Config as Original;
 use ViewableData;
 
-class Config {
+class Config
+{
     protected $_cache = [];
 
     protected $_defaults = [
@@ -191,4 +192,4 @@ class Config {
             unset($this->_cache[$key]);
         }
     }
-} 
+}

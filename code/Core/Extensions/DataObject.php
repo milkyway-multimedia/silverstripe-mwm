@@ -15,7 +15,7 @@ class DataObject extends DataExtension
 {
     private $inheritedObjCache = [];
 
-    function i18n_description()
+    public function i18n_description()
     {
         return _t(get_class($this->owner) . '.DESCRIPTION', $this->owner->config()->description);
     }
@@ -107,10 +107,9 @@ class DataObject extends DataExtension
                         break;
                     }
 
-                    if($this->owner->hasMethod('Parent')) {
+                    if ($this->owner->hasMethod('Parent')) {
                         $page = $page->Parent();
-                    }
-                    else {
+                    } else {
                         $page = null;
                     }
                 }
@@ -171,4 +170,4 @@ class DataObject extends DataExtension
 
         return $value;
     }
-} 
+}

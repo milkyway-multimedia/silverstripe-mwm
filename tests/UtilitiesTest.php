@@ -17,19 +17,22 @@ use Config;
 use Session;
 use i18n;
 
-class UtilitiesTest extends \SapphireTest {
+class UtilitiesTest extends \SapphireTest
+{
     protected $extraDataObjects = [
         'DataObjectTest\NamespacedClass',
         'DataObjectTest\RelationClass',
     ];
 
-    public function testSetCookie() {
+    public function testSetCookie()
+    {
         $this->assertEmpty(Cookie::get('testCookie'));
         Utilities::set_cookie('testCookie', 'is yum');
         $this->assertEquals('is yum', Cookie::get('testCookie'));
     }
 
-    public function testForceCookieExpiry() {
+    public function testForceCookieExpiry()
+    {
         Injector::inst()->registerService(new CookieJar([
             'testCookie' => 'not so yum',
         ]), 'Cookie_Backend');
@@ -41,7 +44,8 @@ class UtilitiesTest extends \SapphireTest {
         $this->assertEmpty(Cookie::get('testCookie'));
     }
 
-    public function testParseRecordFields() {
+    public function testParseRecordFields()
+    {
         $content = 'Hi $Name, I am testing the application named $App';
         $variables = [
             'Name' => 'Tester',
@@ -87,7 +91,8 @@ class UtilitiesTest extends \SapphireTest {
         $this->assertEquals('&lt;b&gt;Hi Tester&lt;/b&gt;, I am testing the application named MWM Utilities', $parsed);
     }
 
-    public function testSaveFromMap() {
+    public function testSaveFromMap()
+    {
         $child = new \DataObjectTest\RelationClass;
         $child->ParentClass = 'DataObjectTest\NamespacedClass';
         $child->{'Parent[Name]'} = 'Test Object';
@@ -103,7 +108,8 @@ class UtilitiesTest extends \SapphireTest {
         $this->assertEquals('Test Object 2', $child->Parent()->Name);
     }
 
-    public function testGetOpengraphMetatag() {
+    public function testGetOpengraphMetatag()
+    {
         $this->assertEquals(
             '<meta property="test" content="value" />',
             Utilities::get_opengraph_metatag('test', 'value')
@@ -115,7 +121,8 @@ class UtilitiesTest extends \SapphireTest {
         );
     }
 
-    public function testAdminEmail() {
+    public function testAdminEmail()
+    {
         $oldBaseUrl = Config::inst()->get('Director', 'alternate_base_url');
         Config::inst()->update('Director', 'alternate_base_url', 'http://test.com');
 
@@ -134,7 +141,8 @@ class UtilitiesTest extends \SapphireTest {
         Config::inst()->update('Email', 'admin_email', $oldEmail);
     }
 
-    public function testGetVisitorCountry() {
+    public function testGetVisitorCountry()
+    {
         $details = [
             'IP' => '8.8.8.8',
             'Code' => 'US',
@@ -164,11 +172,13 @@ class UtilitiesTest extends \SapphireTest {
         Session::set('Milkyway.UserInfo.Country', $oldCountry);
     }
 
-    public function testGetFullCountryName() {
+    public function testGetFullCountryName()
+    {
         $this->assertEquals('Australia', Utilities::get_full_country_name('AU', 'en_US'));
     }
 
-    public function testMapArrayToI18n() {
+    public function testMapArrayToI18n()
+    {
         $data = ['MyProperty' => 'Test'];
 
         $map = Utilities::map_array_to_i18n($data);
@@ -191,7 +201,8 @@ class UtilitiesTest extends \SapphireTest {
         $this->assertEquals('MyProperty is awesome', $map['MyProperty']);
     }
 
-    public function testCleanCacheKey() {
+    public function testCleanCacheKey()
+    {
         $this->assertEquals('Test_', Utilities::clean_cache_key('Test#&^%$'));
         $this->assertEquals('Test_isawesome', Utilities::clean_cache_key('Test#&^%$', ['is' => 'awesome']));
         $this->assertEquals('Test_isawesome_andmore', Utilities::clean_cache_key('Test#&^%$', ['is' => 'awesome', 'and' => 'more']));
