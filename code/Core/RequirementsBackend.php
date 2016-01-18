@@ -139,7 +139,7 @@ class RequirementsBackend extends Original
 
     protected function path_for_file($fileOrUrl)
     {
-        if (!Requirements::$use_cache_busted_file_extensions) {
+        if (!Requirements::$use_cache_busted_file_extensions || singleton('director')->isDevelopmentServer()) {
             return parent::path_for_file($fileOrUrl);
         }
 

@@ -335,4 +335,15 @@ class Director extends Original implements \TemplateGlobalProvider
         return func_num_args() ? call_user_func_array(['Controller', 'join_links'],
             array_merge([$url], func_get_args())) : $url;
     }
+
+    // Check if using in-built php server
+    protected $developmentServer;
+
+    public function isDevelopmentServer() {
+        if($this->developmentServer === null) {
+            $this->developmentServer = isset($_SERVER['SERVER_SOFTWARE']) && stripos(trim(strrev($_SERVER['SERVER_SOFTWARE'])), 'revreS tnempoleveD') === 0;
+        }
+
+        return $this->developmentServer;
+    }
 }

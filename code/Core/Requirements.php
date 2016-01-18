@@ -214,8 +214,7 @@ class Requirements extends Original implements \Flushable
         if ($file && (Director::is_absolute_url($file) || Director::fileExists($file)) && ($ext = pathinfo($file,
                 PATHINFO_EXTENSION)) && ($ext == 'js' || $ext == 'css')
         ) {
-            $file = Director::is_absolute_url($file) ? $file : \Controller::join_links(Director::baseURL(),
-                static::get_cache_busted_file_url($file));
+            $file = Director::is_absolute_url($file) || singleton('director')->isDevelopmentServer() ? $file : \Controller::join_links(Director::baseURL(), static::get_cache_busted_file_url($file));
 
             if ($ext == 'js') {
                 static::insertHeadTags('<script src="' . $file . '"></script>', $file);
