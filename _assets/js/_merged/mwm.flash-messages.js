@@ -3,7 +3,14 @@ window.flash_message = (function (mwm, $) {
         return;
     }
 
-    var exports = window.flash_message || {};
+    var exports = window.flash_message || {},
+        loadMessages = function(messages) {
+            messages = messages.sort(function(a, b) {
+                return ((a['priority'] < b['priority']) ? -1 : ((a['priority'] > b['priority']) ? 1 : 0));
+            });
+
+            mwm.alerts.flash(messages);
+        };
 
     exports.ajax = function(link, before, ping) {
         if(!$.isArray(before)) {
@@ -22,13 +29,7 @@ window.flash_message = (function (mwm, $) {
                             messages = messages.concat(data);
                         }
 
-                        messages = messages.sort(function(a, b) {
-                            return ((a['priority'] < b['priority']) ? -1 : ((a['priority'] > b['priority']) ? 1 : 0));
-                        });
-
-                        for(var i=0;i<messages.length;i++) {
-                            mwm.alerts.top.message(messages[i]);
-                        }
+                        loadMessages(messages);
 
                         if(ping) {
                             var link = ping.hasOwnProperty('link') ? ping.link : ping,

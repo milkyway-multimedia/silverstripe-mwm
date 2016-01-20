@@ -341,7 +341,7 @@ class Director extends Original implements \TemplateGlobalProvider
 
     public function isDevelopmentServer() {
         if($this->developmentServer === null) {
-            $this->developmentServer = isset($_SERVER['SERVER_SOFTWARE']) && stripos(trim(strrev($_SERVER['SERVER_SOFTWARE'])), 'revreS tnempoleveD') === 0;
+            $this->developmentServer = (php_sapi_name() === 'cli-server');
         }
 
         return $this->developmentServer;

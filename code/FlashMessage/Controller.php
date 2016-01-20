@@ -1,6 +1,7 @@
 <?php namespace Milkyway\SS\FlashMessage;
 
 use Controller as Original;
+use RequestHandler;
 
 class Controller extends Original
 {
@@ -20,12 +21,18 @@ class Controller extends Original
      * @throws \SS_HTTPResponse_Exception
      */
     public function refresh($request) {
+        $area = $request->param('Area');
+
+        // Kind of a hack for making sure it goes back to its old ways if an allowed action is set
+        if(in_array(str_replace('-', '_', $area), $this->allowedActions())) {
+            return RequestHandler::handleAction($request, str_replace('-', '_', $area));
+        }
+
         // Only available via AJAX
         if(!$request->isAjax()) {
             return $this->httpError(404);
         }
 
-        $area = $request->param('Area');
         singleton('require')->clear();
 
         // If no area specified, do nothing
@@ -35,6 +42,8 @@ class Controller extends Original
 
         // Add additional messages via an extension (if you want to call an API etc.)
         $this->extend('onRefresh', $area, $request);
+
+        singleton('require')->clear();
 
         $response = $this->getResponse();
         $response->addHeader('Content-type', 'application/json');

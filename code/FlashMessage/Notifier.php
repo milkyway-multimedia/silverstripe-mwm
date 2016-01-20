@@ -1,7 +1,7 @@
 <?php namespace Milkyway\SS\FlashMessage;
 
 use Session;
-use Controller;
+use Controller as Control;
 
 class Notifier
 {
@@ -229,7 +229,7 @@ class Notifier
         return $this;
     }
 
-    protected function style($area)
+    public function style($area)
     {
         if (in_array($area,
                 $this->jsIncluded) || singleton('env')->get('messages.exclude_js') || singleton('env')->get('messages.exclude_' . $area . '_js')
@@ -272,13 +272,19 @@ class Notifier
      */
     protected function canView($area)
     {
+        $notifierController = singleton('Milkyway\\SS\\FlashMessage\\Controller');
+
+        if(Control::curr() instanceof $notifierController) {
+            return true;
+        }
+
         $mapping = (array)singleton('env')->get('messages.mapping');
 
         if (isset($mapping[$area])) {
             $allowed = array_filter((array)$mapping[$area]);
 
             foreach ($allowed as $controller) {
-                if (is_a(Controller::curr(), $controller)) {
+                if (is_a(Control::curr(), $controller)) {
                     return true;
                 }
             }

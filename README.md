@@ -41,6 +41,7 @@ If you want to add more, you can chain but you always must prepend the area.
 - singleton('message')->remove($content, $level, $area) : Remove a global message
 - singleton('message')->remove($params) : Remove a global message by array (you can remove by id if you use this method)
 - singleton('message')->before($link) : Add a link to call before displaying notifications (for calls to APIs)
+- singleton('message')->style($area) : Force load CSS & JS for certain area (for API based messages)
 
 #### Available areas
 Areas are mapped to controllers. The following areas are available:
