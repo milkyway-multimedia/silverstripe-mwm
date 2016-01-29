@@ -245,21 +245,24 @@ class Utilities implements \TemplateGlobalProvider
             $files = explode(',', $files);
 
             foreach ($files as $file) {
-                $file = $theme ? $theme . '/' . $file : $file;
-                $file = CoreDirector::is_absolute_url($file) ? $file : CoreDirector::getAbsFile($file);
+                $filesToCheck = array_unique(($theme ? [$theme . '/' . $file, project() . '/' . $file, $file] : [project() . '/' . $file, $file]));
 
-                if ((CoreDirector::is_absolute_url($file) || @file_exists($file))) {
-                    $contents = @file_get_contents($file);
+                foreach($filesToCheck as $checking) {
+                    $file = CoreDirector::is_absolute_url($checking) ? $checking : CoreDirector::getAbsFile($checking);
 
-                    if (!$isDev && $contents) {
-                        $contents = singleton('require')->minify_contents_according_to_type($contents, $file);
+                    if ((CoreDirector::is_absolute_url($file) || @file_exists($file))) {
+                        $contents = @file_get_contents($file);
+
+                        if (!$isDev && $contents) {
+                            $contents = singleton('require')->minify_contents_according_to_type($contents, $file);
+                        }
+
+                        if (!$isDev) {
+                            singleton('require')->cache()->save($contents, $key);
+                        }
+
+                        break;
                     }
-
-                    if (!$isDev) {
-                        singleton('require')->cache()->save($contents, $key);
-                    }
-
-                    break;
                 }
             }
         }
@@ -369,4 +372,4 @@ class Utilities implements \TemplateGlobalProvider
             );
         }
     }
-} 
+}

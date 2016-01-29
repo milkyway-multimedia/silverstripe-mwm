@@ -53,8 +53,57 @@ class Requirements extends Original implements \Flushable
         ],
     ];
 
+    protected static $disabled_files;
+
     protected static $replace = [];
     protected static $block_ajax = [];
+
+    public static function clear($fileOrID = null) {
+        parent::clear($fileOrID);
+
+        if($fileOrID) {
+            foreach(static::$files as $where => $types) {
+                foreach($types as $type) {
+                    if(isset(static::$files[$where][$type][$fileOrID])) {
+                        static::$disabled_files[$where][$type][$fileOrID] = static::$files[$where][$type][$fileOrID];
+                        unset(static::$files[$where][$type][$fileOrID]);
+                    }
+                }
+            }
+        }
+        else {
+            static::$disabled_files = static::$files;
+
+            static::$files = [
+                'first'       => [
+                    'css' => [],
+                    'js'  => [],
+                ],
+                'last'        => [
+                    'css' => [],
+                    'js'  => [],
+                ],
+                'defer'       => [
+                    'css' => [],
+                    'js'  => [],
+                ],
+                'inline'      => [
+                    'css' => [],
+                    'js'  => [],
+                ],
+                'inline-head' => [
+                    'css' => [],
+                    'js'  => [],
+                ],
+            ];
+        }
+    }
+
+    public static function restore() {
+        parent::restore();
+
+        static::$files = static::$disabled_files;
+    }
 
     public static function config()
     {
