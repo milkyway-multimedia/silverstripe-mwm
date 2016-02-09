@@ -63,7 +63,7 @@
                 this._super();
 
                 if (window.location.hash && this.data('tabs')) {
-                    $(window.location.hash).click();
+                    $('[aria-controls=' + window.location.hash.replace(/^(#tab\-)/,'') + ']').find('a:first').click();
                 }
             }
         });
@@ -72,7 +72,7 @@
         $('.ss-tabset-goto').entwine({
             onclick: function () {
                 if (window.location.hash) {
-                    $(window.location.hash).click();
+                    $('[aria-controls=' + window.location.hash.replace(/^(#tab\-)/,'') + ']').find('a:first').click();
                 }
             }
         });
