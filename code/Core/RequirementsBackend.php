@@ -11,7 +11,6 @@
 use Requirements_Backend as Original;
 use Milkyway\SS\Utilities;
 
-use Config;
 use Controller;
 use Exception;
 
@@ -427,7 +426,7 @@ class RequirementsBackend extends Original
         }
 
         try {
-            if (Config::inst()->get('Injector', 'Eventful') !== null) {
+            if (\Config::inst()->get('Injector', 'Eventful') !== null) {
                 $this->_eventful = singleton('Eventful');
             } else {
                 $this->_eventful = false;

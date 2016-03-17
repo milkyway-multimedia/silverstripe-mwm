@@ -9,7 +9,6 @@
  */
 
 use Extension;
-use Config;
 use Object;
 use ShortcodeParser;
 
@@ -84,8 +83,8 @@ class ShortcodableController extends Extension
     {
         foreach (
             array_diff(
-                (array)Config::inst()->forClass('ShortcodeParser')->providers,
-                (array)Config::inst()->forClass('ShortcodeParser')->disabled
+                (array)\Config::inst()->forClass('ShortcodeParser')->providers,
+                (array)\Config::inst()->forClass('ShortcodeParser')->disabled
             ) as $shortcodeClass) {
             $shortcode = Object::create($shortcodeClass);
 
@@ -96,4 +95,4 @@ class ShortcodableController extends Extension
             }
         }
     }
-} 
+}

@@ -8,9 +8,8 @@
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
-use Requirements as Original;
-use Config;
-use SS_Cache;
+use \Requirements as Original;
+use \SS_Cache;
 
 class Requirements extends Original implements \Flushable
 {
@@ -107,7 +106,7 @@ class Requirements extends Original implements \Flushable
 
     public static function config()
     {
-        return Config::inst()->forClass('Milkyway_Assets');
+        return \Config::inst()->forClass('Milkyway_Assets');
     }
 
     public static function get_files_by_type($type, $where = 'first')
