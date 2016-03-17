@@ -15,6 +15,7 @@ use Versioned;
 use DB;
 use SecurityToken;
 use DataObject as OriginalDataObject;
+use SS_HTTPResponse as Response;
 
 class LeftAndMain extends LeftAndMainExtension
 {
@@ -48,6 +49,11 @@ class LeftAndMain extends LeftAndMainExtension
     public function publish_record($request)
     {
         $record = $this->recordFromRequest($request);
+
+        if($record instanceof Response) {
+            return $record;
+        }
+
         $isVersioned = $record->hasExtension('Versioned');
 
         if ($isVersioned && $record->hasMethod('canPublish') && !$record->canPublish()) {
@@ -82,6 +88,11 @@ class LeftAndMain extends LeftAndMainExtension
     public function unpublish_record($request)
     {
         $record = $this->recordFromRequest($request);
+
+        if($record instanceof Response) {
+            return $record;
+        }
+
         $isVersioned = $record->hasExtension('Versioned');
 
         if ($isVersioned && $record->hasMethod('canDeleteFromLive') && !$record->canDeleteFromLive()) {
@@ -123,6 +134,11 @@ class LeftAndMain extends LeftAndMainExtension
     public function annihilate($request)
     {
         $record = $this->recordFromRequest($request);
+
+        if($record instanceof Response) {
+            return $record;
+        }
+
         $isVersioned = $record->hasExtension('Versioned');
 
         $clone = null;
@@ -203,4 +219,4 @@ class LeftAndMain extends LeftAndMainExtension
 
         return $record;
     }
-} 
+}

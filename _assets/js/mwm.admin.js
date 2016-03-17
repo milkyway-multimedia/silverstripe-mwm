@@ -83,7 +83,6 @@
         $('.cms .cms-tree').entwine({
             getTreeConfig: function () {
                 var self = this,
-                    del = self.data('urlDeletepage'),
                     config = this._super(),
                     cms = $('.cms-container');
 
@@ -91,13 +90,11 @@
                     var _items = config.contextmenu.items;
 
                     config.contextmenu.items = function (node) {
-                        var menu = _items(node);
+                        var menu = _items(node),
+                            url = self.data('urlDuplicate');
 
-                        var unpublish = self.data('urlUnpublishpage'),
-                            publish = self.data('urlPublishpage');
-
-                        // Allow publishing a page via right click
-                        if (publish) {
+                        if (url) {
+                            // Allow publishing a page via right click
                             menu.publish = {
                                 'label':  ss.i18n._t('Tree.Publish', 'Publish'),
                                 'action': function (obj) {
@@ -106,7 +103,7 @@
 
                                     cms.entwine('.ss').loadFragment(
                                         $.path.addSearchParams(
-                                            ss.i18n.sprintf(publish, id),
+                                            ss.i18n.sprintf(url.replace('/duplicate', '/publish-record'), id),
                                             self.data('extraParams')
                                         ), 'SiteTree'
                                     ).success(function () {
@@ -114,10 +111,8 @@
                                         });
                                 }
                             };
-                        }
 
-                        // Allow unpublishing a page via right click
-                        if (unpublish) {
+                            // Allow unpublishing a page via right click
                             menu.unpublish = {
                                 'label':  ss.i18n._t('Tree.Unpublish', 'Unpublish'),
                                 'action': function (obj) {
@@ -126,7 +121,7 @@
 
                                     cms.entwine('.ss').loadFragment(
                                         $.path.addSearchParams(
-                                            ss.i18n.sprintf(unpublish, id),
+                                            ss.i18n.sprintf(url.replace('/duplicate', '/unpublish-record'), id),
                                             self.data('extraParams')
                                         ), 'SiteTree'
                                     ).success(function () {
@@ -134,32 +129,32 @@
                                         });
                                 }
                             };
-                        }
 
-                        // Allow permanent deletion via right click
-                        if (del && !node.hasClass('nodelete')) {
-                            menu.delete = {
-                                'label':  ss.i18n._t('Tree.Delete_Permanently', 'Delete permanently'),
-                                'action': function (obj) {
-                                    if (confirm(ss.i18n._t('CMSMAIN.DELETE_PERMANENTLY', 'Are you sure you want to delete this page permanently (aka no going back)?'))) {
-                                        var id = obj.data('id');
+                            // Allow permanent deletion via right click
+                            if (!node.hasClass('nodelete')) {
+                                menu.delete = {
+                                    'label':  ss.i18n._t('Tree.Delete_Permanently', 'Delete permanently'),
+                                    'action': function (obj) {
+                                        if (confirm(ss.i18n._t('CMSMAIN.DELETE_PERMANENTLY', 'Are you sure you want to delete this page permanently (aka no going back)?'))) {
+                                            var id = obj.data('id');
 
-                                        cms.entwine('.ss').loadFragment(
-                                            $.path.addSearchParams(
-                                                ss.i18n.sprintf(del, id),
-                                                self.data('extraParams')
-                                            ), 'SiteTree'
-                                        ).success(function () {
-                                                var node = self.getNodeByID(id);
-												if (node.length) {
-													self.jstree('delete_node', node);
-												}
+                                            cms.entwine('.ss').loadFragment(
+                                                $.path.addSearchParams(
+                                                    ss.i18n.sprintf(url.replace('/duplicate', '/annihilate'), id),
+                                                    self.data('extraParams')
+                                                ), 'SiteTree'
+                                            ).success(function () {
+                                                    var node = self.getNodeByID(id);
+                                                    if (node.length) {
+                                                        self.jstree('delete_node', node);
+                                                    }
 
-                                                cms.entwine('.ss').reloadCurrentPanel();
-                                            });
+                                                    cms.entwine('.ss').reloadCurrentPanel();
+                                                });
+                                        }
                                     }
-                                }
-                            };
+                                };
+                            }
                         }
 
                         return menu;
