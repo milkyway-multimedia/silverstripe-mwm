@@ -15,23 +15,16 @@
     }
   ],
   "require"     : {
-    "silverstripe/framework" : "~3.1",
-    "danielstjules/stringy"  : "~1.9"
-  },
-  "require-dev"       : {
-    "sheadawson/silverstripe-shortcodable": "~1",
-    "thisisbd/silverstripe-fontawesome-iconpickerfield": "~0.4",
-    "phpunit/PHPUnit": "~3.7"
-  },
-  "suggest": {
-    "sheadawson/silverstripe-shortcodable": "Allows adding shortcodes via the TinyMCE editor",
-    "thisisbd/silverstripe-fontawesome-iconpickerfield": "Use an icon picker field for font awesome icons.",
-    "vlucas/phpdotenv": "Load in environment variables from a file (handy for development). Must be implemented yourself in _ss_environment.php."
+      "milkyway-multimedia/ss-mwm-assets"  : "~0.3",
+      "milkyway-multimedia/ss-mwm-core"  : "~0.3",
+      "milkyway-multimedia/ss-mwm-env"  : "~0.3",
+      "milkyway-multimedia/ss-mwm-flashmessage"  : "~0.3",
+      "milkyway-multimedia/ss-mwm-shortcodes"  : "~0.3"
   },
   "extra"       : {
     "installer-name" : "mwm-utilities",
     "branch-alias": {
-      "dev-master": "0.3.x-dev"
+      "dev-master": "0.4.x-dev"
     }
   }
 }

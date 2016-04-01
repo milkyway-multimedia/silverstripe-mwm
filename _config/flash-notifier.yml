@@ -1,8 +1,0 @@
----
-Name: mwm--flash-notifier
----
-messages:
-  mapping:
-    cms: LeftAndMain
-    page: ContentController
-    form: Form

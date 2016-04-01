@@ -1,1 +1,0 @@
-<i class="$iconClass">$iconContent</i>
