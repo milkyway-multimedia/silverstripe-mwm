@@ -24,7 +24,7 @@ Add the following to your composer.json file
 * MIT
 
 ## Version
-* Version 0.3 (Alpha)
+* Version 0.4 (Alpha)
 
 ## Contact
 #### Mellisa Hankins
